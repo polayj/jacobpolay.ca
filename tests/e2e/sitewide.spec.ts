@@ -93,3 +93,14 @@ test('no third parties', async ({ page, request }) => {
   for (const path of await sitePaths(request)) await page.goto(path, { waitUntil: 'networkidle' });
   expect([...foreign]).toEqual([]);
 });
+
+test('sitemap, canonical and served URLs agree without trailing slashes', async ({ page, request }) => {
+  const paths = await sitePaths(request);
+  const slashed = paths.filter((p) => p !== '/' && p.endsWith('/'));
+  expect(slashed).toEqual([]);
+  for (const path of paths) {
+    const res = await page.goto(path);
+    expect(res?.status(), path).toBe(200);
+    expect(await page.locator('link[rel="canonical"]').getAttribute('href'), path).toBe(`https://jacobpolay.ca${path}`);
+  }
+});

@@ -1,18 +1,6 @@
-const KEY = 'jp-projects-view';
-type View = 'graph' | 'list';
-
-function setView(view: View, buttons: HTMLButtonElement[], persist: boolean) {
-  document.documentElement.dataset.projectsView = view;
-  buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
-  if (!persist) return;
-  try {
-    localStorage.setItem(KEY, view);
-  } catch {
-    /* storage blocked: the choice lasts for this page only */
-  }
-}
-
-function initHighlight(svg: SVGSVGElement) {
+/** Hover and focus highlighting for the projects graph. The Graph/List toggle is in the page's inline head script. */
+export function initGraphHighlight(svg: SVGSVGElement | null) {
+  if (!svg) return;
   const lines = Array.from(svg.querySelectorAll<SVGLineElement>('line'));
   const nodes = new Map(Array.from(svg.querySelectorAll<SVGElement>('.node')).map((n) => [n.dataset.id!, n]));
   const clear = () => {
@@ -36,14 +24,4 @@ function initHighlight(svg: SVGSVGElement) {
     node.addEventListener('focus', () => light(id));
     node.addEventListener('blur', clear);
   }
-}
-
-/** Wires the Graph/List toggle (remembered in localStorage) and the graph's hover and focus highlighting. */
-export function initProjectsView() {
-  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.view-toggle button[data-view]'));
-  const current: View = document.documentElement.dataset.projectsView === 'graph' ? 'graph' : 'list';
-  setView(current, buttons, false);
-  buttons.forEach((b) => b.addEventListener('click', () => setView(b.dataset.view as View, buttons, true)));
-  const svg = document.querySelector<SVGSVGElement>('svg.project-graph');
-  if (svg) initHighlight(svg);
 }

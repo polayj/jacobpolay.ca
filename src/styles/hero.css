@@ -30,7 +30,7 @@
 .ent[data-type='place'] { --e: var(--e-place); }
 .ent[data-type='date'] { --e: var(--e-date); }
 a.ent:hover { color: inherit; }
-.ent::before { content: attr(data-type); position: absolute; left: 0; bottom: 100%; margin-bottom: 1px; color: var(--e); font: 500 11px/1 var(--sans); font-style: normal; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.ent::before { content: attr(data-type) / ''; position: absolute; left: 0; bottom: 100%; margin-bottom: 1px; color: var(--e); font: 500 11px/1 var(--sans); font-style: normal; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity .3s; pointer-events: none; }
 h1 .ent::before { font-size: 12px; margin-bottom: 2px; }
 .ent.show-label::before, .ent:hover::before, .ent:focus-visible::before { opacity: 1; }
 .ent.show-label, .ent:hover, .ent:focus-visible { box-shadow: inset 0 -2px 0 var(--e); }

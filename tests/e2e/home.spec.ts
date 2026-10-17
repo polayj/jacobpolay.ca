@@ -121,3 +121,12 @@ test('headshot omitted', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#about img')).toHaveCount(0);
 });
+
+test('screen readers get the plain transcription', async ({ page }) => {
+  await page.goto('/');
+  await done(page);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Jacob Polay');
+  for (const name of ['Atlantic world', 'University of Saskatchewan', '2026']) {
+    await expect(page.locator('.transcript').getByRole('link', { name, exact: true })).toHaveCount(1);
+  }
+});

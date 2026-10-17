@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://jacobpolay.ca',
-  trailingSlash: 'ignore',
+  trailingSlash: 'never',
   build: { format: 'directory', inlineStylesheets: 'always' },
   integrations: [sitemap()],
 });

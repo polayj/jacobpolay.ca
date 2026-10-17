@@ -82,3 +82,18 @@ for (const slug of SLUGS) {
     }
   });
 }
+
+test('toggle still works when the projects module fails', async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = Document.prototype.querySelectorAll;
+    Document.prototype.querySelectorAll = function (this: Document, sel: string) {
+      if (sel.includes('data-view')) throw new Error('simulated module failure');
+      return original.call(this, sel);
+    } as typeof original;
+  });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/projects');
+  await page.getByRole('button', { name: 'List' }).click();
+  await expect(page.locator('.list-view')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'List' })).toHaveAttribute('aria-pressed', 'true');
+});

@@ -9,12 +9,24 @@ const featured = projects.filter((p) => p.data.featured).map((p) => `project:${p
 ---
 <Base title="Projects" description="Digital projects and tools by Jacob Polay, shown as a knowledge graph or a list." next={{ href: '/writing', label: 'Writing & Talks' }}>
   <script is:inline slot="head">
+    // The view toggle lives here, not in the module below, so it keeps working if that script fails.
     (function () {
-      var d = document.documentElement, v = null;
+      var d = document.documentElement, KEY = 'jp-projects-view', v = null;
       d.classList.add('js');
-      try { v = localStorage.getItem('jp-projects-view'); } catch (e) {}
+      try { v = localStorage.getItem(KEY); } catch (e) {}
       if (v !== 'graph' && v !== 'list') v = matchMedia('(min-width: 768px)').matches ? 'graph' : 'list';
-      d.dataset.projectsView = v;
+      function set(view, persist) {
+        d.dataset.projectsView = view;
+        var buttons = document.getElementsByClassName('view-btn');
+        for (var i = 0; i < buttons.length; i++) buttons[i].setAttribute('aria-pressed', String(buttons[i].getAttribute('data-view') === view));
+        if (persist) { try { localStorage.setItem(KEY, view); } catch (e) {} }
+      }
+      set(v, false);
+      document.addEventListener('DOMContentLoaded', function () { set(d.dataset.projectsView, false); });
+      document.addEventListener('click', function (e) {
+        var b = e.target && e.target.closest ? e.target.closest('.view-toggle .view-btn') : null;
+        if (b) set(b.getAttribute('data-view'), true);
+      });
     })();
   </script>
   <div class="projects-head">
@@ -23,8 +35,8 @@ const featured = projects.filter((p) => p.data.featured).map((p) => `project:${p
       <p class="page-lede">Pipelines, catalogues and series, and how they connect.</p>
     </div>
     <div class="view-toggle" role="group" aria-label="View">
-      <button type="button" data-view="graph" aria-pressed="false">Graph</button>
-      <button type="button" data-view="list" aria-pressed="false">List</button>
+      <button type="button" class="view-btn" data-view="graph" aria-pressed="false">Graph</button>
+      <button type="button" class="view-btn" data-view="list" aria-pressed="false">List</button>
     </div>
   </div>
   <div class="graph-view"><ProjectGraph featured={featured} /></div>
@@ -32,8 +44,8 @@ const featured = projects.filter((p) => p.data.featured).map((p) => `project:${p
 </Base>
 
 <script>
-  import { initProjectsView } from '../../scripts/projects-view';
-  initProjectsView();
+  import { initGraphHighlight } from '../../scripts/projects-view';
+  initGraphHighlight(document.querySelector<SVGSVGElement>('svg.project-graph'));
 </script>
 
 <style is:global>
