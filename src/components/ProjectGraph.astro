@@ -1,0 +1,50 @@
+---
+import { buildGraph, layoutGraph } from '../lib/graph';
+import { loadGraphInput } from '../lib/projects-content';
+
+interface Props { featured: string[] }
+const { featured } = Astro.props;
+const W = 720;
+const H = 480;
+const graph = buildGraph(await loadGraphInput());
+const nodes = layoutGraph(graph, { width: W, height: H });
+const pos = Object.fromEntries(nodes.map((n) => [n.id, n]));
+const short = (s: string) => {
+  const head = s.split(':')[0];
+  return head.length > 30 ? `${head.slice(0, 28)}…` : head;
+};
+const kindName = { project: 'Project', publication: 'Publication', talk: 'Talk', person: 'Person', method: 'Method' } as const;
+const isItem = (k: string) => k === 'project' || k === 'publication' || k === 'talk';
+---
+<svg class="project-graph" viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Graph of projects, writing, talks, collaborators and methods">
+  <g class="edges">
+    {graph.edges.map((e) => (
+      <line x1={pos[e.source].x} y1={pos[e.source].y} x2={pos[e.target].x} y2={pos[e.target].y} data-a={e.source} data-b={e.target} />
+    ))}
+  </g>
+  <g class="nodes">
+    {nodes.map((n) => {
+      const cls = `node kind-${n.kind}${featured.includes(n.id) ? ' featured' : ''}`;
+      const labelY = n.y < H - 40 ? n.y + 24 : n.y - 16;
+      const r = n.kind === 'project' ? 10 : isItem(n.kind) ? 7 : 5;
+      return isItem(n.kind) ? (
+        <a class={cls} href={n.href} data-id={n.id} aria-label={`${kindName[n.kind]}: ${n.label}`}>
+          <title>{`${kindName[n.kind]}: ${n.label}`}</title>
+          <circle cx={n.x} cy={n.y} r={r} />
+          <text x={n.x} y={labelY} text-anchor="middle">{short(n.label)}</text>
+        </a>
+      ) : (
+        <g class={cls} data-id={n.id}>
+          <title>{`${kindName[n.kind]}: ${n.label}`}</title>
+          <circle cx={n.x} cy={n.y} r={r} />
+          <text x={n.x} y={labelY} text-anchor="middle">{short(n.label)}</text>
+        </g>
+      );
+    })}
+  </g>
+</svg>
+<p class="graph-legend">
+  <span><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" class="lg-item" /></svg> Projects, writing and talks</span>
+  <span><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" class="lg-other" /></svg> People and methods</span>
+  <span>Hover or tab to a node to see its connections; select it to open.</span>
+</p>

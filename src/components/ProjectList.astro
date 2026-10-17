@@ -1,0 +1,14 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { projects: CollectionEntry<'projects'>[] }
+const { projects } = Astro.props;
+---
+<ol class="cards">
+  {projects.map((p) => (
+    <li class={`card${p.data.featured ? ' featured' : ''}`}>
+      <h2><a href={`/projects/${p.id}`}>{p.data.title}</a></h2>
+      <p class="summary">{p.data.summary}</p>
+      <p class="meta">{p.data.status} · {p.data.role}</p>
+    </li>
+  ))}
+</ol>

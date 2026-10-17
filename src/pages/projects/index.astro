@@ -1,6 +1,75 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import ProjectGraph from '../../components/ProjectGraph.astro';
+import ProjectList from '../../components/ProjectList.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const featured = projects.filter((p) => p.data.featured).map((p) => `project:${p.id}`);
 ---
-<Base title="Projects" description="Projects">
-  <h1 class="page-title">Projects</h1>
+<Base title="Projects" description="Digital projects and tools by Jacob Polay, shown as a knowledge graph or a list." next={{ href: '/writing', label: 'Writing & Talks' }}>
+  <script is:inline slot="head">
+    (function () {
+      var d = document.documentElement, v = null;
+      d.classList.add('js');
+      try { v = localStorage.getItem('jp-projects-view'); } catch (e) {}
+      if (v !== 'graph' && v !== 'list') v = matchMedia('(min-width: 768px)').matches ? 'graph' : 'list';
+      d.dataset.projectsView = v;
+    })();
+  </script>
+  <div class="projects-head">
+    <div>
+      <h1 class="page-title">Projects</h1>
+      <p class="page-lede">Pipelines, catalogues and series, and how they connect.</p>
+    </div>
+    <div class="view-toggle" role="group" aria-label="View">
+      <button type="button" data-view="graph" aria-pressed="false">Graph</button>
+      <button type="button" data-view="list" aria-pressed="false">List</button>
+    </div>
+  </div>
+  <div class="graph-view"><ProjectGraph featured={featured} /></div>
+  <div class="list-view"><ProjectList projects={projects} /></div>
 </Base>
+
+<script>
+  import { initProjectsView } from '../../scripts/projects-view';
+  initProjectsView();
+</script>
+
+<style is:global>
+  .projects-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .view-toggle { display: none; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; margin-bottom: 36px; font: 14px var(--sans); }
+  html.js .view-toggle { display: inline-flex; }
+  .view-toggle button { font: inherit; border: 0; background: transparent; color: var(--ink-soft); padding: 6px 16px; cursor: pointer; }
+  .view-toggle button[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
+  .graph-view { display: none; }
+  html.js[data-projects-view='graph'] .graph-view { display: block; }
+  html.js[data-projects-view='graph'] .list-view { display: none; }
+
+  .project-graph { width: 100%; height: auto; display: block; }
+  .project-graph line { stroke: var(--rule); stroke-width: 1.4; transition: opacity .2s, stroke .2s; }
+  .project-graph .node circle { stroke-width: 1.6; transition: opacity .2s; }
+  .project-graph .node text { font: 12.5px var(--sans); fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+  .project-graph .kind-project circle, .project-graph .kind-publication circle, .project-graph .kind-talk circle { fill: var(--rubric); stroke: var(--rubric); }
+  .project-graph .kind-person circle, .project-graph .kind-method circle { fill: var(--paper); stroke: var(--ink-soft); }
+  .project-graph .kind-method text { font-style: italic; fill: var(--ink-soft); }
+  .project-graph .featured circle { stroke: var(--ink); stroke-width: 3; }
+  .project-graph .featured text { font-weight: 500; }
+  .project-graph a.node { cursor: pointer; }
+  .project-graph a.node:focus { outline: none; }
+  .project-graph a.node:focus-visible circle { stroke: var(--ink); stroke-width: 3; }
+  .project-graph.hovering .node:not(.lit), .project-graph.hovering line:not(.lit) { opacity: .2; }
+  .project-graph line.lit { stroke: var(--rubric); }
+  .graph-legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font: 13px var(--sans); color: var(--ink-soft); margin: 8px 0 0; }
+  .graph-legend svg { vertical-align: -1px; margin-right: 4px; }
+  .graph-legend .lg-item { fill: var(--rubric); }
+  .graph-legend .lg-other { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.5; }
+
+  .cards { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 18px; }
+  .card { border-top: 3px double var(--ink); padding: 14px 2px 6px; }
+  .card.featured { border-top-color: var(--rubric); }
+  .card h2 { font-family: var(--fell); font-size: 24px; margin: 0 0 8px; }
+  .card h2 a { text-decoration: none; }
+  .card .summary { margin: 0 0 8px; }
+  .card .meta { margin: 0; font: 13px var(--sans); color: var(--ink-soft); }
+</style>

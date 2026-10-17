@@ -1,0 +1,86 @@
+import { describe, it, expect } from 'vitest';
+import { buildGraph, layoutGraph, type GraphInput } from '../../src/lib/graph';
+
+const input = (): GraphInput => ({
+  projects: [
+    { slug: 'ocr-benchmark', title: 'OCR benchmark', collaborators: ['Jim Clifford', 'Jessica Jack'], methods: ['OCR'], related: ['talk:solving-ocr'] },
+    { slug: 'earlymodernner', title: 'EarlyModernNER', collaborators: ['Jim Clifford'], methods: ['OCR', 'GraphRAG'], related: ['talk:csdh'] },
+  ],
+  publications: [{ slug: 'paper', title: 'Paper', authors: ['Jim Clifford', 'Jacob Polay'], related: ['project:ocr-benchmark'] }],
+  talks: [
+    { slug: 'solving-ocr', title: 'Solving OCR', presenters: ['Jim Clifford', 'Jacob Polay'], related: ['project:ocr-benchmark'] },
+    { slug: 'csdh', title: 'CSDH', presenters: ['Jacob Polay'], related: [] },
+  ],
+});
+
+const edgeSet = (g: ReturnType<typeof buildGraph>) => new Set(g.edges.map((e) => [e.source, e.target].sort().join(' — ')));
+
+describe('buildGraph', () => {
+  it('dedupes people', () => {
+    const g = buildGraph(input());
+    const jims = g.nodes.filter((n) => n.id === 'person:jim-clifford');
+    expect(jims).toHaveLength(1);
+    const jimEdges = g.edges.filter((e) => e.source === 'person:jim-clifford' || e.target === 'person:jim-clifford');
+    expect(jimEdges).toHaveLength(4); // two projects, one publication, one talk
+  });
+
+  it('excludes self', () => {
+    expect(buildGraph(input()).nodes.some((n) => n.label === 'Jacob Polay')).toBe(false);
+  });
+
+  it('includes a method only when two or more items use it', () => {
+    const ids = buildGraph(input()).nodes.map((n) => n.id);
+    expect(ids).toContain('method:ocr');
+    expect(ids).not.toContain('method:graphrag');
+  });
+
+  it('throws on an unknown related id', () => {
+    const bad = input();
+    bad.projects[0].related = ['talk:nope'];
+    expect(() => buildGraph(bad)).toThrow('Unknown related id "talk:nope" in project:ocr-benchmark');
+  });
+
+  it('dedupes undirected edges', () => {
+    const g = buildGraph(input());
+    const keys = g.edges.map((e) => [e.source, e.target].sort().join(' — '));
+    expect(keys.filter((k) => k === 'project:ocr-benchmark — talk:solving-ocr')).toHaveLength(1);
+    expect(edgeSet(g).size).toBe(g.edges.length);
+  });
+
+  it('gives items hrefs and kinds', () => {
+    const g = buildGraph(input());
+    const byId = Object.fromEntries(g.nodes.map((n) => [n.id, n]));
+    expect(byId['project:ocr-benchmark']).toMatchObject({ kind: 'project', href: '/projects/ocr-benchmark' });
+    expect(byId['talk:csdh']).toMatchObject({ kind: 'talk', href: '/writing#csdh' });
+    expect(byId['publication:paper']).toMatchObject({ kind: 'publication', href: '/writing#paper' });
+    expect(byId['person:jim-clifford'].href).toBeUndefined();
+  });
+});
+
+describe('layoutGraph', () => {
+  it('is deterministic', () => {
+    const g = buildGraph(input());
+    expect(layoutGraph(g, { width: 720, height: 480 })).toEqual(layoutGraph(g, { width: 720, height: 480 }));
+  });
+
+  it('an unconnected node does not squash the rest of the graph', () => {
+    const g = buildGraph({
+      ...input(),
+      projects: [...input().projects, { slug: 'film', title: 'Film', collaborators: [], methods: [], related: [] }],
+    });
+    const laid = layoutGraph(g, { width: 720, height: 480 }).filter((n) => n.id !== 'project:film');
+    const xs = laid.map((n) => n.x);
+    const ys = laid.map((n) => n.y);
+    const spread = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+    expect(spread).toBeGreaterThan(300);
+  });
+
+  it('keeps every node in bounds', () => {
+    for (const n of layoutGraph(buildGraph(input()), { width: 720, height: 480 })) {
+      expect(n.x).toBeGreaterThanOrEqual(40);
+      expect(n.x).toBeLessThanOrEqual(680);
+      expect(n.y).toBeGreaterThanOrEqual(30);
+      expect(n.y).toBeLessThanOrEqual(450);
+    }
+  });
+});

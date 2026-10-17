@@ -1,0 +1,72 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, next: projects[i + 1] ?? null },
+  }));
+}
+
+const { project, next } = Astro.props;
+const { Content } = await render(project);
+const [publications, talks, projects] = await Promise.all([getCollection('publications'), getCollection('talks'), getCollection('projects')]);
+const self = `project:${project.id}`;
+const titles = new Map<string, { title: string; href: string }>();
+publications.forEach((p) => titles.set(`publication:${p.id}`, { title: p.data.title, href: `/writing#${p.id}` }));
+talks.forEach((t) => titles.set(`talk:${t.id}`, { title: t.data.title, href: `/writing#${t.id}` }));
+projects.forEach((p) => titles.set(`project:${p.id}`, { title: p.data.title, href: `/projects/${p.id}` }));
+const relatedIds = new Set([
+  ...project.data.related,
+  ...publications.filter((p) => p.data.related.includes(self)).map((p) => `publication:${p.id}`),
+  ...talks.filter((t) => t.data.related.includes(self)).map((t) => `talk:${t.id}`),
+  ...projects.filter((p) => p.data.related.includes(self)).map((p) => `project:${p.id}`),
+]);
+const related = [...relatedIds].flatMap((id) => titles.get(id) ?? []);
+const nextLink = next ? { href: `/projects/${next.id}`, label: next.data.title } : { href: '/writing', label: 'Writing & Talks' };
+---
+<Base title={project.data.title} description={project.data.summary} next={nextLink}>
+  <p class="crumb"><a href="/projects">All projects</a></p>
+  <h1 class="page-title">{project.data.title}</h1>
+  <p class="page-lede">{project.data.summary}</p>
+  <div class="project-layout">
+    <article class="prose"><Content /></article>
+    <aside class="project-meta" aria-label="Project details">
+      <dl>
+        <dt>Status</dt><dd>{project.data.status}</dd>
+        <dt>Role</dt><dd>{project.data.role}</dd>
+        {project.data.collaborators.length > 0 && <dt>With</dt>}
+        {project.data.collaborators.length > 0 && <dd>{project.data.collaborators.join(', ')}</dd>}
+        {project.data.methods.length > 0 && <dt>Methods</dt>}
+        {project.data.methods.length > 0 && <dd>{project.data.methods.join(', ')}</dd>}
+      </dl>
+      {project.data.links.length > 0 && (
+        <ul class="links">{project.data.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+      )}
+      {related.length > 0 && (
+        <div class="related">
+          <h2>Related</h2>
+          <ul>{related.map((r) => <li><a href={r.href}>{r.title}</a></li>)}</ul>
+        </div>
+      )}
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .crumb { margin: 32px 0 -36px; font: 13px var(--sans); }
+  .project-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 40px; }
+  .project-meta { font-size: 15px; border-left: 1px solid var(--rule); padding-left: 18px; }
+  dl { margin: 0 0 16px; }
+  dt { font-family: var(--fell-sc); color: var(--rubric); font-size: 15px; }
+  dd { margin: 0 0 10px; }
+  .links, .related ul { list-style: none; padding: 0; margin: 0 0 16px; }
+  .links li, .related li { margin-bottom: 6px; }
+  .related h2 { font-family: var(--fell-sc); font-size: 15px; color: var(--rubric); margin: 0 0 6px; font-weight: 400; }
+  @media (max-width: 760px) {
+    .project-layout { grid-template-columns: minmax(0, 1fr); }
+    .project-meta { border-left: 0; border-top: 1px solid var(--rule); padding: 16px 0 0; }
+  }
+</style>
