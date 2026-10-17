@@ -1,6 +1,18 @@
 ---
+import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import { formatDate } from '../lib/dates';
+
+const now = await getEntry('now', 'now');
+if (!now) throw new Error('src/content/now.md is missing');
+const { Content } = await render(now);
 ---
-<Base title="Now" description="Now">
+<Base title="Now" description="What Jacob Polay is working on this term." next={{ href: '/', label: 'About' }}>
   <h1 class="page-title">Now</h1>
+  <p class="page-lede">What I'm working on this term. <time datetime={now.data.updated}>Updated {formatDate(now.data.updated)}</time>.</p>
+  <div class="prose now"><Content /></div>
 </Base>
+
+<style>
+  .now :global(strong) { font-family: var(--fell-sc); font-weight: 400; color: var(--rubric); font-size: 1.05em; }
+</style>

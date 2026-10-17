@@ -1,6 +1,108 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import { cv } from '../data/cv';
+import { chicago } from '../lib/cite';
+import { byDateDesc, formatDate } from '../lib/dates';
+import { site } from '../site';
+
+const publications = (await getCollection('publications')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
+const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
 ---
-<Base title="CV" description="CV">
-  <h1 class="page-title">CV</h1>
+<Base title="CV" description="Curriculum vitae of Jacob Polay, PhD student in History at the University of Saskatchewan." next={{ href: '/now', label: 'Now' }}>
+  <div class="cv-head">
+    <div>
+      <h1 class="page-title">Curriculum Vitae</h1>
+      <p class="page-lede">{site.role}, {site.department}, {site.university}</p>
+    </div>
+    <a class="pdf" href="/Polay_Jacob_CV.pdf">Download PDF</a>
+  </div>
+
+  <div class="cv">
+    <section id="education" aria-labelledby="edu-h">
+      <h2 id="edu-h" class="section">Education</h2>
+      <ul>
+        {cv.education.map((e) => (
+          <li>
+            <div class="row"><strong>{e.degree}</strong><span class="dates">{e.dates}</span></div>
+            <div class="sub">{e.institution}</div>
+            {e.thesis && <div class="detail">Thesis: <i>{e.thesis}</i></div>}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="publications" aria-labelledby="pub-h">
+      <h2 id="pub-h" class="section">Publications</h2>
+      <ul class="hanging">{publications.map((p) => <li set:html={chicago(p, { html: true })} />)}</ul>
+    </section>
+
+    <section id="presentations" aria-labelledby="talk-h">
+      <h2 id="talk-h" class="section">Presentations</h2>
+      <ul class="hanging">
+        {talks.map((t) => (
+          <li>“{t.title}.” {t.presenters.join(' and ')}. {t.event}, {t.place}, {formatDate(t.date)}.</li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="experience" aria-labelledby="exp-h">
+      <h2 id="exp-h" class="section">Academic and professional experience</h2>
+      <ul>
+        {cv.experience.map((x) => (
+          <li class="job">
+            <div class="row"><span><strong>{x.title}</strong>, {x.org}</span><span class="dates">{x.dates}</span></div>
+            <ul class="bullets">{x.bullets.map((b) => <li>{b}</li>)}</ul>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="awards" aria-labelledby="award-h">
+      <h2 id="award-h" class="section">Awards and scholarships</h2>
+      <ul>
+        {cv.awards.map((a) => (
+          <li><div class="row"><span><strong>{a.name}</strong>, {a.org} ({a.amount})</span><span class="dates">{a.year}</span></div></li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="service" aria-labelledby="svc-h">
+      <h2 id="svc-h" class="section">Service</h2>
+      <ul class="bullets">{cv.service.map((s) => <li>{s}</li>)}</ul>
+    </section>
+
+    <section id="skills" aria-labelledby="skill-h">
+      <h2 id="skill-h" class="section">Research and digital methods</h2>
+      <ul class="bullets">{cv.methods.map((s) => <li>{s}</li>)}</ul>
+      <h3>Languages</h3>
+      <ul class="bullets">{cv.languages.map((s) => <li>{s}</li>)}</ul>
+      <h3>Coursework and training</h3>
+      <ul class="bullets">{cv.training.map((s) => <li>{s}</li>)}</ul>
+    </section>
+
+    <section id="interests" aria-labelledby="int-h">
+      <h2 id="int-h" class="section">Research interests</h2>
+      <p>{cv.interests.join('; ')}</p>
+    </section>
+  </div>
 </Base>
+
+<style>
+  .cv-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .pdf { font: 14px var(--sans); border: 1px solid var(--rubric); color: var(--rubric); border-radius: 999px; padding: 6px 16px; text-decoration: none; margin-bottom: 36px; }
+  .pdf:hover { background: var(--rubric); color: var(--paper); }
+  .cv { max-width: 760px; }
+  .cv section { margin-bottom: 34px; }
+  .cv ul { list-style: none; padding: 0; margin: 0; }
+  .cv section > ul > li { padding: 8px 0; }
+  .row { display: flex; justify-content: space-between; gap: 4px 16px; flex-wrap: wrap; }
+  .dates { color: var(--ink-soft); font-size: 16px; white-space: nowrap; }
+  .sub { font-style: italic; }
+  .detail { font-size: 16px; color: var(--ink-soft); }
+  strong { font-weight: 600; }
+  .cv ul.bullets { list-style: disc; padding-left: 1.3em; font-size: 16px; }
+  .cv ul.bullets li { margin: 2px 0; padding: 0; }
+  .hanging li { padding-left: 1.5em; text-indent: -1.5em; }
+  h3 { font-family: var(--fell-sc); font-size: 17px; font-weight: 400; color: var(--ink-soft); margin: 16px 0 4px; }
+</style>

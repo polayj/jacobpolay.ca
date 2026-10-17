@@ -1,6 +1,48 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const interests = [
+  'Early modern Britain', 'Atlantic world', 'History of capitalism', 'History of medicine', 'Commodity history',
+  'Extractivism', 'Digital history', 'OCR and HTR', 'Named-entity recognition', 'Knowledge graphs', 'GraphRAG',
+  'Critical AI', 'Archives',
+];
 ---
-<Base title="Research" description="Research">
+<Base title="Research" description="Jacob Polay's research on medicinal commodities in the early modern Atlantic world and on computational methods for reading the archive." next={{ href: '/projects', label: 'Projects' }}>
   <h1 class="page-title">Research</h1>
+  <p class="page-lede">Early modern commodities and medicine, and the machines that now read the archive.</p>
+
+  <div class="research prose">
+    <p>My research sits where early modern history, the history of capitalism, the history of medicine, and AI methods meet. I am a PhD student in the Department of History at the University of Saskatchewan, supervised by <a href="https://jimclifford.ca/">Dr. Jim Clifford</a>, Professor of History.</p>
+    <p class="training"><span class="label">Training.</span> Comprehensive fields in the History of Capitalism (Dr. Jim Clifford) and the History of Medicine (Dr. Erika Dyck).</p>
+
+    <section aria-labelledby="r1">
+      <h2 id="r1" class="section">Doctoral project: medicinal commodities in the early modern Atlantic world</h2>
+      <p>How did drugs and medicines move as commodities into and out of Britain across the long eighteenth century, c. 1660–1815? Colonial drugs and "simples" flowed in; manufactured medicines flowed back out to plantations, ships, and garrisons. The project asks how small medicinal commodities, many co-opted from Indigenous knowledge, fed into a larger system that helped build the infrastructure of industrialization.</p>
+      <p>It brings together long-distance medicine, commodity chains, and extractivism, with a secondary thread on the philosophy of method for AI in historical research. Planned outputs are an open knowledge graph and dataset, open-source pipeline and tools, and dissertation chapters. The methods scale up my MA pipeline substantially and add handwritten text recognition (HTR).</p>
+    </section>
+
+    <section aria-labelledby="r2">
+      <h2 id="r2" class="section">NLP and GraphRAG for historical corpora</h2>
+      <p>I research pipelines that combine named-entity recognition and GraphRAG for work on historical corpora, framed as discovery, search and ranking tools for historians rather than automated answer machines. This includes methodological work on transcription error rates and gold-standard ground truth for early modern documents.</p>
+      <p>My MA thesis, <i>Loud Yet Invisible: A Humanist-Designed Pipeline for Unlocking the Early Modern Archive</i> (2026), built this pipeline for about 20,000 printed documents from 1614 to 1810, with ginger as a case study. See <a href="/projects/earlymodernner">EarlyModernNER and GraphRAG</a>.</p>
+    </section>
+
+    <section aria-labelledby="r3">
+      <h2 id="r3" class="section">OCR benchmarking</h2>
+      <p>With Jim Clifford, Jessica Jack, Mark Humphries and Lianne C. Leddy, I benchmarked how well current OCR reads historical print from 1612 to 1921 and what its errors mean for historical practice. See the <a href="/projects/ocr-benchmark">OCR benchmark</a> and the working paper <a href="https://working-papers-in-critical-search.github.io/paper-004-ocr-benchmark/"><i>Reading the Archive by Machine</i></a>.</p>
+    </section>
+
+    <ul class="interests" aria-label="Research interests">
+      {interests.map((i) => <li>{i}</li>)}
+    </ul>
+  </div>
 </Base>
+
+<style>
+  .research section { margin-top: 36px; }
+  .research h2.section { font-size: 21px; line-height: 1.3; }
+  .training { font-size: 16px; color: var(--ink-soft); border-left: 2px solid var(--rule); padding-left: 12px; }
+  .training .label { font-family: var(--fell-sc); color: var(--rubric); }
+  .interests { list-style: none; padding: 0; margin-top: 36px; display: flex; flex-wrap: wrap; gap: 8px 10px; font: 13px var(--sans); }
+  .interests li { border: 1px solid var(--rule); border-radius: 999px; padding: 3px 12px; color: var(--ink-soft); }
+</style>
