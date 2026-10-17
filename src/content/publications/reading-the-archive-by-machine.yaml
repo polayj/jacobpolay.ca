@@ -1,0 +1,13 @@
+type: working-paper
+authors:
+  - { given: Jim, family: Clifford }
+  - { given: Jacob, family: Polay }
+  - { given: Jessica, family: Jack }
+  - { given: Mark, family: Humphries }
+  - { given: Lianne C., family: Leddy }
+title: "Reading the Archive by Machine: An OCR Benchmark for Historians, 1612–1921"
+venue: Working Papers in Critical Search
+number: "4"
+date: "2026"
+url: https://working-papers-in-critical-search.github.io/paper-004-ocr-benchmark/
+related: [project:ocr-benchmark]

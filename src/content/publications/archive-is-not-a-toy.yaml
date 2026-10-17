@@ -1,0 +1,14 @@
+type: blog-post
+authors:
+  - { given: Jacob, family: Polay }
+  - { given: Chloë, family: Farr }
+  - { given: Jessica, family: Jack }
+title: 'The Archive is Not a Toy: The Hidden Problems of a "Vintage" AI'
+venue: Active History
+date: "2026-07-13"
+url: https://activehistory.ca/blog/2026/07/13/the-archive-is-not-a-toy-the-hidden-problems-of-a-vintage-ai/
+summary: >-
+  A critique of Talkie-1930, a "vintage" language model trained on pre-1930 text. It argues that the model
+  aestheticizes a narrow, elite, colonial archival record, presents a legally motivated corpus cutoff as
+  historically meaningful, and deploys a research tool as a public chatbot without adequate framing.
+related: [project:ai-and-collaboration]
