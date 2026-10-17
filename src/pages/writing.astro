@@ -8,6 +8,16 @@ import { byDateDesc, formatDate } from '../lib/dates';
 const publications = (await getCollection('publications')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
 const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
 const series = await getEntry('projects', 'ai-and-collaboration');
+const articles = publications.map((p) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: p.title,
+  author: p.authors.map((a) => ({ '@type': 'Person', name: `${a.given} ${a.family}` })),
+  datePublished: p.date,
+  isPartOf: { '@type': 'Periodical', name: p.venue },
+  ...(p.url ? { url: p.url } : {}),
+  ...(p.doi ? { sameAs: `https://doi.org/${p.doi}` } : {}),
+}));
 const withOthers = (presenters: string[]) => {
   const others = presenters.filter((p) => p !== 'Jacob Polay');
   return others.length ? `With ${others.join(' and ')}. ` : '';
@@ -16,6 +26,7 @@ const withOthers = (presenters: string[]) => {
 <Base title="Writing & Talks" description="Publications, public scholarship and talks by Jacob Polay." next={{ href: '/cv', label: 'CV' }}>
   <h1 class="page-title">Writing &amp; Talks</h1>
   <p class="page-lede">Publications, public scholarship, and presentations.</p>
+  {articles.map((a) => <script type="application/ld+json" slot="head" set:html={JSON.stringify(a)} />)}
 
   <section id="publications" aria-labelledby="pubs-h">
     <h2 id="pubs-h" class="section">Publications</h2>

@@ -11,6 +11,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/source-serif-4": "^5.3.1",
     "@fontsource/im-fell-english": "^5.3.0",
     "@fontsource/im-fell-english-sc": "^5.3.0",
@@ -22,7 +24,9 @@
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "1.64",
+    "@resvg/resvg-js": "2.6",
     "@types/d3-force": "^3.0.10",
+    "satori": "^0.62.0",
     "typescript": "^6.0.3",
     "vitest": "^5.0.5",
     "wrangler": "^4.151.1"

@@ -10,8 +10,22 @@ import { formatDate } from '../lib/dates';
 const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id }));
 const publications = (await getCollection('publications')).map((e) => ({ ...e.data, slug: e.id }));
 const recent = recentItems(talks, publications, 4);
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: site.url,
+  email: `mailto:${site.email}`,
+  jobTitle: 'PhD Student in History',
+  description: site.tagline,
+  affiliation: { '@type': 'CollegeOrUniversity', name: site.university, url: 'https://www.usask.ca/' },
+  alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'University of Calgary' }],
+  sameAs: [site.orcid, site.bluesky, site.github],
+  knowsAbout: ['Early modern history', 'History of capitalism', 'History of medicine', 'Digital history', 'OCR', 'Named-entity recognition', 'Knowledge graphs'],
+};
 ---
 <Base title={site.name} description={site.tagline} next={{ href: '/research', label: 'Research' }}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(person)} />
   <Hero />
   <section id="about" class="about" aria-labelledby="about-h">
     <div class="about-text prose">
