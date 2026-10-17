@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jacobpolay.ca/sitemap-index.xml

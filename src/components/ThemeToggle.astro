@@ -1,0 +1,7 @@
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+  <span aria-hidden="true">◐</span>
+</button>
+<script>
+  import { initThemeToggle } from '../scripts/theme';
+  initThemeToggle(document.querySelector<HTMLButtonElement>('[data-theme-toggle]'));
+</script>

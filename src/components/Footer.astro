@@ -1,0 +1,17 @@
+---
+import { site } from '../site';
+const profiles = [
+  { href: `mailto:${site.email}`, label: site.email },
+  { href: site.orcid, label: 'ORCID' },
+  { href: site.bluesky, label: 'Bluesky' },
+  { href: site.github, label: 'GitHub' },
+];
+---
+<footer class="site-footer">
+  <span class="fleuron" aria-hidden="true">❦</span>
+  <ul class="profiles" aria-label="Contact and profiles">
+    {profiles.map((p) => <li><a href={p.href} rel={p.href.startsWith('http') ? 'me' : undefined}>{p.label}</a></li>)}
+  </ul>
+  <p class="land-ack">{site.landAcknowledgement}</p>
+  <p class="colophon">{site.colophon}</p>
+</footer>
