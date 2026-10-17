@@ -66,3 +66,10 @@ test('catchwords', async ({ page }) => {
     await expect(page.locator('.catchword a'), from).toHaveAttribute('href', to);
   }
 });
+
+test('the AHA talk is credited to Jacob alone', async ({ page }) => {
+  for (const path of ['/writing', '/cv', '/projects']) {
+    await page.goto(path);
+    await expect(page.locator('body'), path).not.toContainText('Pemberton');
+  }
+});

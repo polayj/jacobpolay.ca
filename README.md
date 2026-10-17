@@ -56,7 +56,16 @@ Re-run it after changing your name, tagline or role, then commit the images. It 
 
 ## Deployment
 
-`wrangler.jsonc` describes the Cloudflare Worker (`jacobpolay-ca`), which serves `dist/` on `jacobpolay.ca` and `www.jacobpolay.ca`. Cloudflare Workers Builds runs `npm run build` and then `npx wrangler deploy` on every push to `main`. A redirect rule in the Cloudflare dashboard sends `www.jacobpolay.ca` to `jacobpolay.ca`.
+`wrangler.jsonc` describes the Cloudflare Worker (`jacobpolay-ca`), which serves `dist/` on `jacobpolay.ca` and `www.jacobpolay.ca`. `worker/index.ts` runs first and redirects `www` and plain `http` to `https://jacobpolay.ca`; everything else is served from the built site.
+
+To deploy by hand (you need to be signed in with `npx wrangler login`):
+
+```bash
+npm run build
+npx wrangler deploy
+```
+
+To deploy automatically on every push to `main`, connect the repo once in the Cloudflare dashboard: Workers & Pages → `jacobpolay-ca` → Settings → Builds → Connect, with build command `npm run build` and deploy command `npx wrangler deploy`.
 
 ## Design notes
 

@@ -3,7 +3,7 @@
 This is Jacob's own overview of his work, as he provided it. It is the source for the site's prose. The CV facts come from `public/Polay_Jacob_CV.pdf`.
 
 Corrections Jacob has given since:
-- The AHA talk is titled "Fitting Machine to Page" (co-presented with Keith Pemberton, per the CV).
+- The AHA talk is titled "Fitting Machine to Page" and is credited to Jacob alone (no co-presenter).
 - Describe Jim Clifford as "Professor of History, University of Saskatchewan" and link to https://jimclifford.ca/. Do not use the "(commodity and digital histories, HGIS Lab)" gloss below.
 - GitHub is `polayj`. Toolbox: https://github.com/polayj/digital-historians-toolbox. EarlyModernNER: https://github.com/polayj/earlymodernner.
 - There is no SSHRC mention anywhere. The comprehensive fields are only "training background", with no detail.

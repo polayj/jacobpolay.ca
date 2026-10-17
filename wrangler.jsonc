@@ -1,11 +1,14 @@
 // Cloudflare Worker that serves the static build in ./dist on jacobpolay.ca.
-// There is no `main` script: the Worker only serves files.
+// worker/index.ts runs first only to redirect www and http to https://jacobpolay.ca.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "jacobpolay-ca",
   "compatibility_date": "2026-10-01",
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page"
   },

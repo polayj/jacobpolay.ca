@@ -84,7 +84,7 @@ The layout has a headshot slot beside the About text. **Until Jacob has a photo,
 
 ## 9. Settled details (formerly open items)
 
-1. **AHA talk:** "Fitting Machine to Page", AI and History Conference (American Historical Association), Baltimore, 16 October 2026, co-presented with Keith Pemberton as on the CV.
+1. **AHA talk:** "Fitting Machine to Page", AI and History Conference (American Historical Association), Baltimore, 16 October 2026, credited to Jacob alone.
 2. **Supervisor:** link to https://jimclifford.ca/ and describe him as "Professor of History, University of Saskatchewan", as he describes himself there.
 3. **GitHub:** `polayj` is Jacob's account. Toolbox repo: https://github.com/polayj/digital-historians-toolbox. EarlyModernNER repo: https://github.com/polayj/earlymodernner.
 4. **DOIs:** a web search turned up neither for "Circumventing the Garbler" nor for the OCR benchmark working paper. The Cite buttons use the venue details and links instead: the working paper's page at https://working-papers-in-critical-search.github.io/paper-004-ocr-benchmark/, and *Intersections* 8.1 with no URL until one is found.
