@@ -1,0 +1,15 @@
+// Cloudflare Worker that serves the static build in ./dist on jacobpolay.ca.
+// There is no `main` script: the Worker only serves files.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jacobpolay-ca",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "jacobpolay.ca", "custom_domain": true },
+    { "pattern": "www.jacobpolay.ca", "custom_domain": true }
+  ]
+}
