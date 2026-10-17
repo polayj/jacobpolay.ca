@@ -39,18 +39,26 @@ const featured = projects.filter((p) => p.data.featured).map((p) => `project:${p
       <button type="button" class="view-btn" data-view="list" aria-pressed="false">List</button>
     </div>
   </div>
-  <div class="graph-view"><ProjectGraph featured={featured} /></div>
+  <div class="graph-view">
+    <ProjectGraph featured={featured} width={720} height={600} class="graph-wide" />
+    <ProjectGraph featured={featured} width={380} height={940} margin={{ x: 70, y: 40 }} class="graph-tall" />
+    <p class="graph-legend">
+      <span><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" class="lg-item" /></svg> Projects, writing and talks</span>
+      <span><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" class="lg-other" /></svg> People and methods</span>
+      <span>Hover or tab to a node to see its connections; select it to open.</span>
+    </p>
+  </div>
   <div class="list-view"><ProjectList projects={projects} /></div>
 </Base>
 
 <script>
   import { initGraphHighlight } from '../../scripts/projects-view';
-  initGraphHighlight(document.querySelector<SVGSVGElement>('svg.project-graph'));
+  document.querySelectorAll<SVGSVGElement>('svg.project-graph').forEach(initGraphHighlight);
 </script>
 
 <style is:global>
   .projects-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; }
-  .view-toggle { display: none; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; margin-bottom: 36px; font: 14px var(--sans); }
+  .view-toggle { display: none; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; margin-bottom: 36px; font: 13px var(--sans); }
   html.js .view-toggle { display: inline-flex; }
   .view-toggle button { font: inherit; border: 0; background: transparent; color: var(--ink-soft); padding: 6px 16px; cursor: pointer; }
   .view-toggle button[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
@@ -69,7 +77,13 @@ const featured = projects.filter((p) => p.data.featured).map((p) => `project:${p
   .project-graph .featured text { font-weight: 500; }
   .project-graph a.node { cursor: pointer; }
   .project-graph a.node:focus { outline: none; }
-  .project-graph a.node:focus-visible circle { stroke: var(--ink); stroke-width: 3; }
+  .project-graph a.node:focus-visible circle { stroke: var(--rubric); stroke-width: 3; stroke-dasharray: 3 2; }
+  .project-graph a.node:focus-visible text { text-decoration: underline; }
+  .graph-tall { display: none; }
+  @media (max-width: 600px) {
+    .graph-wide { display: none; }
+    .graph-tall { display: block; }
+  }
   .project-graph.hovering .node:not(.lit), .project-graph.hovering line:not(.lit) { opacity: .2; }
   .project-graph line.lit { stroke: var(--rubric); }
   .graph-legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font: 13px var(--sans); color: var(--ink-soft); margin: 8px 0 0; }

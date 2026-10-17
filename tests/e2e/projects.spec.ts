@@ -6,16 +6,16 @@ const SLUGS = ['toolbox', 'earlymodernner', 'ocr-benchmark', 'ai-and-collaborati
 test('default desktop graph', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/projects');
-  await expect(page.locator('svg.project-graph')).toBeVisible();
+  await expect(page.locator('svg.project-graph:visible')).toHaveCount(1);
   await expect(page.locator('.list-view')).toBeHidden();
-  await expect(page.locator('.node[data-id="project:toolbox"]')).toHaveClass(/featured/);
+  await expect(page.locator('svg.project-graph:visible .node[data-id="project:toolbox"]')).toHaveClass(/featured/);
 });
 
 test('default phone list', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/projects');
   await expect(page.locator('.list-view')).toBeVisible();
-  await expect(page.locator('svg.project-graph')).toBeHidden();
+  await expect(page.locator('.graph-view')).toBeHidden();
 });
 
 test('toggle remembers', async ({ page }) => {
@@ -28,7 +28,7 @@ test('toggle remembers', async ({ page }) => {
   await expect(page.locator('.list-view')).toBeVisible();
   await page.reload();
   await expect(page.locator('.list-view')).toBeVisible();
-  await expect(page.locator('svg.project-graph')).toBeHidden();
+  await expect(page.locator('.graph-view')).toBeHidden();
 });
 
 test('projects storage-blocked', async ({ page }) => {
@@ -118,4 +118,28 @@ test('the AI and Collaboration page lists every post in the series', async ({ pa
     'Can You Read Two Million Pages? An LLM Can Help.',
     'Not Just Farming: How an LLM Helped Me Study Saskatchewan',
   ]) await expect(page.locator('.series-posts')).toContainText(t);
+});
+
+test('graph on a phone uses a tall layout with readable labels', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/projects');
+  await page.getByRole('button', { name: 'Graph' }).click();
+  const svg = page.locator('svg.project-graph:visible');
+  await expect(svg).toHaveCount(1);
+  const [w, h] = (await svg.getAttribute('viewBox'))!.split(' ').slice(2).map(Number);
+  expect(w).toBeLessThanOrEqual(420);
+  expect(h).toBeGreaterThan(w);
+  const labelHeight = await svg.locator('text').first().evaluate((t) => t.getBoundingClientRect().height);
+  expect(labelHeight).toBeGreaterThanOrEqual(10);
+});
+
+test('keyboard focus on the featured node is visibly different', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/projects');
+  const circle = page.locator('svg.project-graph:visible a.node.featured circle');
+  const resting = await circle.evaluate((c) => getComputedStyle(c).strokeDasharray);
+  await page.keyboard.press('Tab');
+  await page.locator('svg.project-graph:visible a.node.featured').focus();
+  const focused = await circle.evaluate((c) => getComputedStyle(c).strokeDasharray);
+  expect(focused).not.toBe(resting);
 });

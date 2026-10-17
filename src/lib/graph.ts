@@ -95,12 +95,18 @@ export function buildGraph(input: GraphInput, self = 'Jacob Polay'): Graph {
 
 type SimNode = GraphNode & SimulationNodeDatum;
 
-/** Lays the graph out with d3-force (deterministic) and fits it inside the box, leaving 95px at the sides for labels and 30px top and bottom. */
+/**
+ * Lays the graph out with d3-force (deterministic) and fits it inside the box, leaving `margin`
+ * (default 95px at the sides for labels, 30px top and bottom). In a tall box (a phone) nodes are
+ * pulled harder toward the vertical axis and may be stretched vertically up to 2.2 times, so the
+ * graph uses the height instead of shrinking to fit the width.
+ */
 export function layoutGraph(
   g: Graph,
-  opts: { width: number; height: number; iterations?: number },
+  opts: { width: number; height: number; iterations?: number; margin?: { x: number; y: number } },
 ): (GraphNode & { x: number; y: number })[] {
-  const { width, height, iterations = 300 } = opts;
+  const { width, height, iterations = 300, margin = { x: 95, y: 30 } } = opts;
+  const tall = height > width;
   const nodes: SimNode[] = g.nodes.map((n) => ({ ...n }));
   const links = g.edges.map((e) => ({ ...e }));
   forceSimulation(nodes)
@@ -108,25 +114,27 @@ export function layoutGraph(
     .force('charge', forceManyBody().strength(-340))
     .force('center', forceCenter(width / 2, height / 2))
     .force('collide', forceCollide(52))
-    .force('x', forceX(width / 2).strength(0.08))
+    .force('x', forceX(width / 2).strength(tall ? 0.08 * (height / width) : 0.08))
     .force('y', forceY(height / 2).strength(0.12))
     .stop()
     .tick(iterations);
 
-  const mx = 95;
-  const my = 30;
+  const { x: mx, y: my } = margin;
   const xs = nodes.map((n) => n.x ?? 0);
   const ys = nodes.map((n) => n.y ?? 0);
   const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
-  const scale = Math.min((width - 2 * mx) / (maxX - minX || 1), (height - 2 * my) / (maxY - minY || 1), 1.5);
-  const ox = (width - (maxX - minX) * scale) / 2;
-  const oy = (height - (maxY - minY) * scale) / 2;
+  const fitX = (width - 2 * mx) / (maxX - minX || 1);
+  const fitY = (height - 2 * my) / (maxY - minY || 1);
+  const scaleX = Math.min(fitX, fitY, 1.5);
+  const scaleY = tall ? Math.min(fitY, scaleX * 2.2) : scaleX;
+  const ox = (width - (maxX - minX) * scaleX) / 2;
+  const oy = (height - (maxY - minY) * scaleY) / 2;
   const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
   const round = (v: number) => Math.round(v * 10) / 10;
   return nodes.map(({ id, label, kind, href, x = 0, y = 0 }) => ({
     id, label, kind, ...(href ? { href } : {}),
-    x: round(clamp(ox + (x - minX) * scale, mx, width - mx)),
-    y: round(clamp(oy + (y - minY) * scale, my, height - my)),
+    x: round(clamp(ox + (x - minX) * scaleX, mx, width - mx)),
+    y: round(clamp(oy + (y - minY) * scaleY, my, height - my)),
   }));
 }
 

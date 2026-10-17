@@ -130,3 +130,19 @@ describe('buildGraph skips person edges a related project already carries', () =
   });
   it('still links people the project does not list', () => expect(keys).toContain('person:sara-wilmshurst publication:post'));
 });
+
+describe('layoutGraph in a tall, narrow box', () => {
+  const laid = layoutGraph(buildGraph(input()), { width: 380, height: 900, margin: { x: 70, y: 40 } });
+  it('respects custom margins', () => {
+    for (const n of laid) {
+      expect(n.x).toBeGreaterThanOrEqual(70);
+      expect(n.x).toBeLessThanOrEqual(310);
+      expect(n.y).toBeGreaterThanOrEqual(40);
+      expect(n.y).toBeLessThanOrEqual(860);
+    }
+  });
+  it('uses the height of the box', () => {
+    const ys = laid.map((n) => n.y);
+    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThan(450);
+  });
+});

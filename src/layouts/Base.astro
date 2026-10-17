@@ -21,8 +21,10 @@ interface Props {
   title: string;
   description: string;
   next?: { href: string; label: string };
+  /** Keep this page out of search results (the 404 page). */
+  noindex?: boolean;
 }
-const { title, description, next } = Astro.props;
+const { title, description, next, noindex = false } = Astro.props;
 const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
 const fullTitle = isHome ? site.name : `${title} · ${site.name}`;
 ---
@@ -34,7 +36,7 @@ const fullTitle = isHome ? site.name : `${title} · ${site.name}`;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     {[serifFont, fellFont, fellScFont].map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
-    <Meta title={fullTitle} description={description} />
+    <Meta title={fullTitle} description={description} noindex={noindex} />
     <script is:inline>
       try { var t = localStorage.getItem('jp-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
     </script>

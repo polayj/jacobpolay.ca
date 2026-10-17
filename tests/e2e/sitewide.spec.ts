@@ -104,3 +104,26 @@ test('sitemap, canonical and served URLs agree without trailing slashes', async 
     expect(await page.locator('link[rel="canonical"]').getAttribute('href'), path).toBe(`https://jacobpolay.ca${path}`);
   }
 });
+
+test('Inter is only used at 13px or smaller', async ({ page, request }) => {
+  test.setTimeout(120_000);
+  const big: string[] = [];
+  for (const path of await sitePaths(request)) {
+    await page.goto(path);
+    big.push(
+      ...(await page.evaluate(() =>
+        Array.from(document.querySelectorAll<HTMLElement>('body *'))
+          .filter((el) => Array.from(el.childNodes).some((n) => n.nodeType === 3 && /[A-Za-z]/.test(n.nodeValue ?? '')))
+          .filter((el) => getComputedStyle(el).fontFamily.startsWith('Inter') && parseFloat(getComputedStyle(el).fontSize) > 13)
+          .map((el) => `${el.tagName.toLowerCase()}.${el.className} ${getComputedStyle(el).fontSize}`),
+      )).map((s) => `${path}: ${s}`),
+    );
+  }
+  expect([...new Set(big)]).toEqual([]);
+});
+
+test('404 page is not indexed and has no canonical', async ({ request }) => {
+  const html = await (await request.get('/no-such-page')).text();
+  expect(html).toContain('<meta name="robots" content="noindex"');
+  expect(html).not.toContain('rel="canonical"');
+});

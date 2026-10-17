@@ -35,7 +35,7 @@ img { max-width: 100%; height: auto; }
 h1, h2, h3 { font-weight: 400; line-height: 1.15; }
 h2.section { font-family: var(--fell-sc); font-size: 22px; letter-spacing: .05em; color: var(--rubric); margin: 0 0 14px; }
 
-.skip-link { position: absolute; left: 12px; top: -48px; background: var(--ink); color: var(--paper); padding: 8px 12px; z-index: 20; font: 14px var(--sans); }
+.skip-link { position: absolute; left: 12px; top: -48px; background: var(--ink); color: var(--paper); padding: 8px 12px; z-index: 20; font: 13px var(--sans); }
 .skip-link:focus { top: 12px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
@@ -68,7 +68,7 @@ h2.section { font-family: var(--fell-sc); font-size: 22px; letter-spacing: .05em
 /* footer */
 .site-footer { border-top: 1px solid var(--rule); margin-top: 32px; padding: 28px 16px 48px; text-align: center; color: var(--ink-soft); font-size: 15px; }
 .site-footer .fleuron { font-size: 26px; display: block; margin-bottom: 14px; }
-.profiles { list-style: none; padding: 0; margin: 0 0 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; font: 14px var(--sans); }
+.profiles { list-style: none; padding: 0; margin: 0 0 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; font: 13px var(--sans); }
 .profiles a { color: var(--ink); }
 .land-ack { max-width: 62ch; margin: 0 auto 14px; font-style: italic; }
 .colophon { margin: 0 auto; font-size: 13px; max-width: 62ch; }

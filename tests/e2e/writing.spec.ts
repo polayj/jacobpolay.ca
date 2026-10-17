@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
-const GARBLER = 'Polay, Jacob. "Circumventing the Garbler." Intersections 8, no. 1 (2025): 28.';
+const GARBLER = 'Polay, Jacob. “Circumventing the Garbler.” Intersections 8, no. 1 (2025): 28.';
 
 test('sections', async ({ page }) => {
   await page.goto('/writing');
@@ -31,7 +31,7 @@ test('sections', async ({ page }) => {
 test('series posts credit lead and contributing authors', async ({ page }) => {
   await page.goto('/writing');
   await expect(page.locator('#stop-choosing-tools .citation')).toContainText(
-    'Polay, Jacob, Chloë Farr, and Jessica Jack. "Stop Choosing Tools. Start Building Them." Active History, September 30, 2026.',
+    'Polay, Jacob, Chloë Farr, and Jessica Jack. “Stop Choosing Tools. Start Building Them.” Active History (blog), September 30, 2026.',
   );
   await expect(page.locator('#not-just-farming .citation')).toContainText('Jack, Jessica, Chloë Farr, and Jacob Polay.');
   await expect(page.locator('#ai-enabled-boom-in-document-transcription a[href="https://activehistory.ca/blog/2026/09/23/ai-enabled-document-transcription/"]')).toHaveCount(1);
@@ -75,4 +75,20 @@ test('cite panel is styled', async ({ page }) => {
   await cite.locator('summary').click();
   const bg = await cite.locator('.cite-body').evaluate((el) => getComputedStyle(el).backgroundColor);
   expect(bg).not.toBe('rgba(0, 0, 0, 0)');
+});
+
+test('copying twice announces both times', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/writing');
+  const cite = page.locator('#circumventing-the-garbler details.cite');
+  await cite.locator('summary').click();
+  await cite.locator('[aria-live]').evaluate((el) => {
+    (window as any).__statuses = [];
+    new MutationObserver(() => (window as any).__statuses.push(el.textContent)).observe(el, { childList: true, characterData: true, subtree: true });
+  });
+  const copy = cite.getByRole('button', { name: 'Copy' });
+  await copy.click();
+  await expect(cite.locator('[aria-live]')).toHaveText('Copied');
+  await copy.click();
+  await expect.poll(() => page.evaluate(() => (window as any).__statuses)).toEqual(['Copied', '', 'Copied']);
 });

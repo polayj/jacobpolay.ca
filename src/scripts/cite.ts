@@ -3,6 +3,7 @@ export function initCiteButtons(root: ParentNode = document) {
   root.querySelectorAll<HTMLButtonElement>('button[data-copy]').forEach((button) => {
     button.addEventListener('click', async () => {
       const status = button.parentElement?.querySelector('[aria-live]');
+      if (status) status.textContent = ''; // clear first so a repeat copy is announced again
       try {
         await navigator.clipboard.writeText(button.dataset.copy ?? '');
         if (status) status.textContent = 'Copied';

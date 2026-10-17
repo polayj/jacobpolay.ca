@@ -19,6 +19,12 @@ function authorList(p: PublicationData): string {
 
 const endSentence = (s: string) => (/[.?!]$/.test(s) ? s : `${s}.`);
 
+/** Quotation marks inside a title become curly single quotes, since the title itself sits in curly doubles. */
+const curlyInner = (s: string) => s.replace(/["“]([^"”]*)["”]/g, '‘$1’').replace(/'/g, '’');
+
+/** Escapes the characters LaTeX treats specially. */
+const latex = (s: string) => s.replace(/([&%#$_])/g, '\\$1');
+
 function link(p: PublicationData): string | undefined {
   return p.doi ? `https://doi.org/${p.doi}` : p.url;
 }
@@ -27,7 +33,7 @@ function link(p: PublicationData): string | undefined {
 export function chicago(p: PublicationData, opts: { html?: boolean } = {}): string {
   const esc = opts.html ? escapeHtml : (s: string) => s;
   const venue = opts.html ? `<i>${esc(p.venue)}</i>` : p.venue;
-  const title = endSentence(p.title.replace(/"/g, "'"));
+  const title = endSentence(curlyInner(p.title));
   let where: string;
   switch (p.type) {
     case 'article':
@@ -37,12 +43,12 @@ export function chicago(p: PublicationData, opts: { html?: boolean } = {}): stri
       where = `${venue}${p.number ? `, no. ${p.number}` : ''} (${year(p)}).`;
       break;
     case 'blog-post':
-      where = `${venue}, ${chicagoDate(p.date)}.`;
+      where = `${venue} (blog), ${chicagoDate(p.date)}.`;
       break;
   }
   const url = link(p);
   const shownUrl = url && (opts.html ? `<a href="${esc(url)}">${esc(url)}</a>` : url);
-  return `${esc(endSentence(authorList(p)))} "${esc(title)}" ${where}${shownUrl ? ` ${shownUrl}.` : ''}`;
+  return `${esc(endSentence(authorList(p)))} “${esc(title)}” ${where}${shownUrl ? ` ${shownUrl}.` : ''}`;
 }
 
 const ascii = (s: string) => s.normalize('NFD').replace(/[^a-zA-Z]/g, '').toLowerCase();
@@ -53,13 +59,14 @@ export function bibtexKey(p: PublicationData): string {
   return `${ascii(p.authors[0].family)}${year(p)}${word}`;
 }
 
-/** A BibTeX/BibLaTeX entry: @article, @techreport (working paper) or @online (blog post). */
+/** A BibTeX/BibLaTeX entry: @article, @techreport (working paper) or @online (blog post). The title is
+ * double-braced so styles keep its capitals ("OCR", "AI"), and LaTeX special characters are escaped. */
 export function bibtex(p: PublicationData): string {
   const entryType = { article: 'article', 'working-paper': 'techreport', 'blog-post': 'online' }[p.type];
   const fields: [string, string | undefined][] = [
     ['author', p.authors.map((a) => `${a.family}, ${a.given}`).join(' and ')],
-    ['title', p.title],
-    [p.type === 'article' ? 'journal' : p.type === 'working-paper' ? 'institution' : 'organization', p.venue],
+    ['title', `{${latex(p.title)}}`],
+    [p.type === 'article' ? 'journal' : p.type === 'working-paper' ? 'institution' : 'organization', latex(p.venue)],
     ['year', year(p)],
     ['date', p.date.length > 4 ? p.date : undefined],
     ['volume', p.volume],

@@ -2,17 +2,24 @@
 import { buildGraph, layoutGraph, wrapLabel } from '../lib/graph';
 import { loadGraphInput } from '../lib/projects-content';
 
-interface Props { featured: string[] }
-const { featured } = Astro.props;
-const W = 720;
-const H = 600;
+interface Props {
+  featured: string[];
+  width: number;
+  height: number;
+  margin?: { x: number; y: number };
+  class?: string;
+}
+const { featured, width: W, height: H, margin, class: extra = '' } = Astro.props;
 const graph = buildGraph(await loadGraphInput());
-const nodes = layoutGraph(graph, { width: W, height: H });
+const nodes = layoutGraph(graph, { width: W, height: H, margin });
 const pos = Object.fromEntries(nodes.map((n) => [n.id, n]));
+// Crop the frame to the space the layout actually uses, leaving room for labels above and below.
+const top = Math.max(0, Math.min(...nodes.map((n) => n.y)) - 40);
+const bottom = Math.min(H, Math.max(...nodes.map((n) => n.y)) + 50);
 const kindName = { project: 'Project', publication: 'Publication', talk: 'Talk', person: 'Person', method: 'Method' } as const;
 const isItem = (k: string) => k === 'project' || k === 'publication' || k === 'talk';
 ---
-<svg class="project-graph" viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Graph of projects, writing, talks, collaborators and methods">
+<svg class={`project-graph ${extra}`.trim()} viewBox={`0 ${top} ${W} ${bottom - top}`} role="group" aria-label="Graph of projects, writing, talks, collaborators and methods">
   <g class="edges">
     {graph.edges.map((e) => (
       <line x1={pos[e.source].x} y1={pos[e.source].y} x2={pos[e.target].x} y2={pos[e.target].y} data-a={e.source} data-b={e.target} />
@@ -40,8 +47,3 @@ const isItem = (k: string) => k === 'project' || k === 'publication' || k === 't
     })}
   </g>
 </svg>
-<p class="graph-legend">
-  <span><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" class="lg-item" /></svg> Projects, writing and talks</span>
-  <span><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" class="lg-other" /></svg> People and methods</span>
-  <span>Hover or tab to a node to see its connections; select it to open.</span>
-</p>
