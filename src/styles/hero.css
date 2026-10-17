@@ -1,4 +1,4 @@
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; padding: 48px 0; border-bottom: 1px solid var(--rule); }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; padding: 48px 0; border-bottom: 1px solid var(--rule); }
 .facsimile { background: var(--paper-2); border: 1px solid var(--rule); padding: 40px 28px 30px; text-align: center; font-family: var(--fell); transform: rotate(-.5deg); position: relative; }
 .facsimile .fx { filter: blur(.35px); }
 .facsimile .caption, .transcript .caption { font: 11px var(--sans); color: var(--ink-soft); letter-spacing: .06em; text-transform: uppercase; }
