@@ -114,3 +114,25 @@ export function layoutGraph(
     y: round(clamp(oy + (y - minY) * scale, my, height - my)),
   }));
 }
+
+/**
+ * A node label on at most two lines of about `max` characters: the part before any colon,
+ * wrapped at word boundaries. Words that don't fit are dropped without an ellipsis, so the
+ * visible text is always a prefix of the node's accessible name.
+ */
+export function wrapLabel(label: string, max = 22): string[] {
+  const head = label.split(':')[0].trim();
+  const lines: string[] = [];
+  let line = '';
+  for (const word of head.split(/\s+/)) {
+    if (line && `${line} ${word}`.length > max) {
+      lines.push(line);
+      line = word;
+      if (lines.length === 2) return lines;
+    } else {
+      line = line ? `${line} ${word}` : word;
+    }
+  }
+  if (line && lines.length < 2) lines.push(line);
+  return lines;
+}

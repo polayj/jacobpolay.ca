@@ -18,3 +18,14 @@ const bib = `data:text/plain;charset=utf-8,${encodeURIComponent(bibtex(p))}`;
     </div>
   </div>
 </details>
+
+<style>
+  .cite summary { cursor: pointer; display: inline-block; font: 13px var(--sans); color: var(--rubric); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 12px; list-style: none; }
+  .cite summary::-webkit-details-marker { display: none; }
+  .cite-body { margin-top: 10px; background: var(--paper-2); border: 1px solid var(--rule); padding: 12px 14px; }
+  .cite-text { margin: 0 0 10px; font-size: 15px; user-select: all; }
+  .cite-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font: 13px var(--sans); }
+  .cite-actions button, .cite-actions a { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 4px 12px; cursor: pointer; text-decoration: none; }
+  .cite-actions button:hover, .cite-actions a:hover { border-color: var(--rubric); color: var(--rubric); }
+  .cite-status { color: var(--ink-soft); }
+</style>

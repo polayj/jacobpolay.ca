@@ -1,5 +1,5 @@
 ---
-import { buildGraph, layoutGraph } from '../lib/graph';
+import { buildGraph, layoutGraph, wrapLabel } from '../lib/graph';
 import { loadGraphInput } from '../lib/projects-content';
 
 interface Props { featured: string[] }
@@ -9,10 +9,6 @@ const H = 480;
 const graph = buildGraph(await loadGraphInput());
 const nodes = layoutGraph(graph, { width: W, height: H });
 const pos = Object.fromEntries(nodes.map((n) => [n.id, n]));
-const short = (s: string) => {
-  const head = s.split(':')[0];
-  return head.length > 30 ? `${head.slice(0, 28)}…` : head;
-};
 const kindName = { project: 'Project', publication: 'Publication', talk: 'Talk', person: 'Person', method: 'Method' } as const;
 const isItem = (k: string) => k === 'project' || k === 'publication' || k === 'talk';
 ---
@@ -25,19 +21,20 @@ const isItem = (k: string) => k === 'project' || k === 'publication' || k === 't
   <g class="nodes">
     {nodes.map((n) => {
       const cls = `node kind-${n.kind}${featured.includes(n.id) ? ' featured' : ''}`;
-      const labelY = n.y < H - 40 ? n.y + 24 : n.y - 16;
+      const lines = wrapLabel(n.label).length;
+      const labelY = n.y < H - 50 ? n.y + 24 : n.y - 16 - (lines - 1) * 15;
       const r = n.kind === 'project' ? 10 : isItem(n.kind) ? 7 : 5;
       return isItem(n.kind) ? (
-        <a class={cls} href={n.href} data-id={n.id} aria-label={`${kindName[n.kind]}: ${n.label}`}>
+        <a class={cls} href={n.href} data-id={n.id} aria-label={`${n.label} (${kindName[n.kind].toLowerCase()})`}>
           <title>{`${kindName[n.kind]}: ${n.label}`}</title>
           <circle cx={n.x} cy={n.y} r={r} />
-          <text x={n.x} y={labelY} text-anchor="middle">{short(n.label)}</text>
+          <text x={n.x} y={labelY} text-anchor="middle">{wrapLabel(n.label).map((line, i, all) => <tspan x={n.x} dy={i === 0 ? 0 : 15}>{i < all.length - 1 ? `${line} ` : line}</tspan>)}</text>
         </a>
       ) : (
         <g class={cls} data-id={n.id}>
           <title>{`${kindName[n.kind]}: ${n.label}`}</title>
           <circle cx={n.x} cy={n.y} r={r} />
-          <text x={n.x} y={labelY} text-anchor="middle">{short(n.label)}</text>
+          <text x={n.x} y={labelY} text-anchor="middle">{wrapLabel(n.label).map((line, i, all) => <tspan x={n.x} dy={i === 0 ? 0 : 15}>{i < all.length - 1 ? `${line} ` : line}</tspan>)}</text>
         </g>
       );
     })}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildGraph, layoutGraph, type GraphInput } from '../../src/lib/graph';
+import { buildGraph, layoutGraph, wrapLabel, type GraphInput } from '../../src/lib/graph';
 
 const input = (): GraphInput => ({
   projects: [
@@ -82,5 +82,18 @@ describe('layoutGraph', () => {
       expect(n.y).toBeGreaterThanOrEqual(30);
       expect(n.y).toBeLessThanOrEqual(450);
     }
+  });
+});
+
+describe('wrapLabel', () => {
+  it('keeps a short label on one line', () => expect(wrapLabel('Solving OCR')).toEqual(['Solving OCR']));
+  it('drops a subtitle after the colon', () => expect(wrapLabel('Reading the Unreadable: Optical Character Recognition')).toEqual(['Reading the Unreadable']));
+  it('wraps a long label onto two lines at a word boundary', () =>
+    expect(wrapLabel("The Digital Historian's Toolbox")).toEqual(['The Digital', "Historian's Toolbox"]));
+  it('never adds an ellipsis and keeps whole words', () => {
+    const lines = wrapLabel('AI and Collaboration (Active History) and a very long tail of extra words');
+    expect(lines.length).toBeLessThanOrEqual(2);
+    expect(lines.join(' ')).not.toContain('…');
+    expect('AI and Collaboration (Active History) and a very long tail of extra words'.startsWith(lines.join(' '))).toBe(true);
   });
 });

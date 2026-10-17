@@ -51,3 +51,12 @@ test('bibtex download', async ({ page }) => {
   expect(text.startsWith('@online{polay2026archive,')).toBe(true);
   expect(text).toContain('Chloë');
 });
+
+test('cite panel is styled', async ({ page }) => {
+  await page.goto('/writing');
+  const cite = page.locator('#circumventing-the-garbler details.cite');
+  await expect(cite.locator('summary')).toHaveCSS('border-top-style', 'solid');
+  await cite.locator('summary').click();
+  const bg = await cite.locator('.cite-body').evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(bg).not.toBe('rgba(0, 0, 0, 0)');
+});
