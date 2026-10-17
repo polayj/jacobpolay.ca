@@ -1,7 +1,54 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Headshot from '../components/Headshot.astro';
 import { site } from '../site';
+import { recentItems } from '../lib/recent';
+import { formatDate } from '../lib/dates';
+
+const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id }));
+const publications = (await getCollection('publications')).map((e) => ({ ...e.data, slug: e.id }));
+const recent = recentItems(talks, publications, 4);
 ---
-<Base title={site.name} description={site.tagline}>
-  <h1 class="page-title">{site.name}</h1>
+<Base title={site.name} description={site.tagline} next={{ href: '/research', label: 'Research' }}>
+  <Hero />
+  <section id="about" class="about" aria-labelledby="about-h">
+    <div class="about-text prose">
+      <h2 id="about-h" class="section">About</h2>
+      <p class="first">I am a PhD student in the Department of History at the University of Saskatchewan, based in Saskatoon. My research sits where early modern history, the history of capitalism, the history of medicine, and AI methods meet. I build humanist-designed computational pipelines for reading the archive at scale, and I write critically about how AI products represent historical records.</p>
+      <p>My doctoral project follows medicinal commodities through the early modern Atlantic world, c. 1660–1815: colonial drugs and "simples" flowing into Britain, and manufactured medicines flowing back out to plantations, ships, and garrisons. I am supervised by <a href="https://jimclifford.ca/">Dr. Jim Clifford</a>, Professor of History.</p>
+      <p class="contact">
+        <a href={`mailto:${site.email}`}>{site.email}</a> · <a href={site.orcid}>ORCID</a> · <a href={site.bluesky}>Bluesky</a> · <a href={site.github}>GitHub</a> · <a href="/Polay_Jacob_CV.pdf">CV (PDF)</a>
+      </p>
+    </div>
+    <Headshot />
+  </section>
+  <section class="recent" aria-labelledby="recent-h">
+    <h2 id="recent-h" class="section">Recent</h2>
+    <ol>
+      {recent.map((item) => (
+        <li>
+          <time datetime={item.date}>{formatDate(item.date)}</time>
+          <div><a href={item.href} class="t">{item.title}</a>. {item.meta}.</div>
+        </li>
+      ))}
+    </ol>
+  </section>
 </Base>
+
+<style>
+  .about { display: flex; gap: 40px; align-items: flex-start; padding: 48px 0 16px; }
+  .about :global(.headshot) { width: 220px; border: 1px solid var(--rule); }
+  .first::first-letter { font-family: var(--fell); float: left; font-size: 4.1em; line-height: .82; padding: 6px 10px 0 0; color: var(--rubric); }
+  .contact { font: 14px/1.9 var(--sans); color: var(--ink-soft); }
+  .recent { padding: 16px 0 8px; }
+  .recent ol { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
+  .recent li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  .recent time { font-family: var(--fell-sc); color: var(--rubric); font-size: 16px; }
+  .recent .t { font-style: italic; }
+  @media (max-width: 700px) {
+    .about { flex-direction: column-reverse; }
+    .recent li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  }
+</style>

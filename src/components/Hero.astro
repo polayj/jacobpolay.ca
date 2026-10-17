@@ -1,0 +1,39 @@
+---
+import '../styles/hero.css';
+import { periodize } from '../lib/periodize';
+import { site } from '../site';
+
+const old = (text: string) => text.split(/(\s+)/).map((w) => (/^\s*$/.test(w) ? w : periodize(w))).join('');
+const role = `${site.role} · ${site.department} · ${site.university}`;
+const imprint = 'Saskatoon: Printed for the Author, 2026.';
+const [tagBefore, tagAfter] = site.tagline.split('Atlantic world');
+---
+<section class="hero" data-hero="pending" aria-label="Title page">
+  <div class="facsimile" aria-hidden="true">
+    <span class="caption">Page image</span>
+    <div class="fx">
+      <hr class="rule-double" />
+      <p class="f-name">{old(site.name)}</p>
+      <p class="f-tag">{old(site.tagline)}</p>
+      <div class="fleuron" data-skip>❦</div>
+      <p class="f-role">{old(role)}</p>
+      <hr class="rule-double" />
+      <p class="f-imp">{old(imprint)}</p>
+    </div>
+  </div>
+  <div class="hero-arrow" aria-hidden="true">→</div>
+  <div class="transcript">
+    <p class="caption" aria-hidden="true">Transcription</p>
+    <div class="tbody">
+      <h1><a class="ent" data-type="person" href="#about">{site.name}</a></h1>
+      <p class="ttag">{tagBefore}<a class="ent" data-type="place" href="/research">Atlantic world</a>{tagAfter}</p>
+      <p class="trole">{site.role} · {site.department} · <a class="ent" data-type="org" href="/cv">{site.university}</a></p>
+      <p class="timp"><span class="ent" data-type="place">Saskatoon</span>: Printed for the Author, <a class="ent" data-type="date" href="/now">2026</a>.</p>
+    </div>
+  </div>
+</section>
+<script>
+  import { runHero } from '../scripts/hero';
+  const root = document.querySelector<HTMLElement>('.hero');
+  if (root) runHero(root, { animate: !matchMedia('(prefers-reduced-motion: reduce)').matches });
+</script>
