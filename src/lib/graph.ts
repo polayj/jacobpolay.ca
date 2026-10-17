@@ -15,7 +15,9 @@ const kebab = (s: string) =>
 
 /**
  * Turns the site's content into a graph of items (projects, publications, talks),
- * the people they share and the methods used by two or more projects.
+ * the people they share and the methods used by two or more projects. A publication with
+ * the same title as a project (a project that *is* a paper) is merged into the project's node, and
+ * an item related to a project doesn't get its own edge to people that project already lists.
  * Throws when a `related` id names an item that doesn't exist.
  */
 export function buildGraph(input: GraphInput, self = 'Jacob Polay'): Graph {
@@ -34,6 +36,17 @@ export function buildGraph(input: GraphInput, self = 'Jacob Polay'): Graph {
     })),
   ];
   const itemIds = new Set(items.map((i) => i.id));
+  const projectByTitle = new Map(input.projects.map((p) => [p.title, `project:${p.slug}`]));
+  const alias = new Map<string, string>();
+  for (const p of input.publications) {
+    const project = projectByTitle.get(p.title);
+    if (project) alias.set(`publication:${p.slug}`, project);
+  }
+  const resolve = (id: string) => alias.get(id) ?? id;
+  // People a project already lists don't also get an edge to each item related to that project.
+  const projectPeople = new Map(input.projects.map((p) => [`project:${p.slug}`, new Set(p.collaborators)]));
+  const carriedByProject = (related: string[], name: string) =>
+    related.some((r) => projectPeople.get(resolve(r))?.has(name));
 
   const edges = new Map<string, GraphEdge>();
   const connect = (a: string, b: string) => {
@@ -45,21 +58,23 @@ export function buildGraph(input: GraphInput, self = 'Jacob Polay'): Graph {
   const people = new Map<string, string>();
   const methodUse = new Map<string, { label: string; items: string[] }>();
   for (const item of items) {
+    const itemId = resolve(item.id);
     for (const name of item.people) {
       if (name === self) continue;
+      if (item.kind !== 'project' && carriedByProject(item.related, name)) continue;
       const id = `person:${kebab(name)}`;
       people.set(id, name);
-      connect(item.id, id);
+      connect(itemId, id);
     }
     for (const m of item.methods) {
       const id = `method:${kebab(m)}`;
       const use = methodUse.get(id) ?? { label: m, items: [] };
-      use.items.push(item.id);
+      use.items.push(itemId);
       methodUse.set(id, use);
     }
     for (const rel of item.related) {
       if (!itemIds.has(rel)) throw new Error(`Unknown related id "${rel}" in ${item.id}`);
-      connect(item.id, rel);
+      connect(itemId, resolve(rel));
     }
   }
 
@@ -71,7 +86,7 @@ export function buildGraph(input: GraphInput, self = 'Jacob Polay'): Graph {
   }
 
   const nodes: GraphNode[] = [
-    ...items.map(({ id, label, kind, href }) => ({ id, label, kind, href })),
+    ...items.filter((i) => !alias.has(i.id)).map(({ id, label, kind, href }) => ({ id, label, kind, href })),
     ...[...people].sort(([a], [b]) => a.localeCompare(b)).map(([id, label]) => ({ id, label, kind: 'person' as const })),
     ...methodNodes,
   ];
@@ -89,10 +104,10 @@ export function layoutGraph(
   const nodes: SimNode[] = g.nodes.map((n) => ({ ...n }));
   const links = g.edges.map((e) => ({ ...e }));
   forceSimulation(nodes)
-    .force('link', forceLink<SimNode, (typeof links)[number]>(links).id((n) => n.id).distance(100))
-    .force('charge', forceManyBody().strength(-260))
+    .force('link', forceLink<SimNode, (typeof links)[number]>(links).id((n) => n.id).distance(115))
+    .force('charge', forceManyBody().strength(-340))
     .force('center', forceCenter(width / 2, height / 2))
-    .force('collide', forceCollide(40))
+    .force('collide', forceCollide(52))
     .force('x', forceX(width / 2).strength(0.08))
     .force('y', forceY(height / 2).strength(0.12))
     .stop()

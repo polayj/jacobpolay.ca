@@ -36,7 +36,8 @@ test('cv', async ({ page, request }) => {
   await expect(edu).toContainText('Master of Arts, History');
   await expect(edu).toContainText('Loud Yet Invisible: A Humanist-Designed Pipeline for Unlocking the Early Modern Archive');
   await expect(edu).toContainText('Bachelor of Arts, First Class Honours, History');
-  await expect(page.locator('#publications li')).toHaveCount(3);
+  await expect(page.locator('#publications li')).toHaveCount(2);
+  await expect(page.locator('#public-scholarship li')).toHaveCount(5);
   const talks = page.locator('#presentations li');
   await expect(talks).toHaveCount(3);
   await expect(talks.first()).toContainText('Fitting Machine to Page');

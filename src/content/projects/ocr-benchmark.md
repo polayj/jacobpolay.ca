@@ -1,6 +1,6 @@
 ---
-title: "OCR benchmark for historians"
-summary: "A benchmark of how well current OCR reads historical print from 1612 to 1921, and what its errors mean for historical research."
+title: "Reading the Archive by Machine: An OCR Benchmark for Historians, 1612–1921"
+summary: "A benchmark of how well current OCR reads historical documents from 1612 to 1921, and what its errors mean for historical research."
 status: complete
 role: Co-author
 order: 3
@@ -11,4 +11,4 @@ collaborators: [Jim Clifford, Jessica Jack, Mark Humphries, Lianne C. Leddy]
 methods: [OCR]
 related: [publication:reading-the-archive-by-machine, talk:reading-the-unreadable, talk:solving-ocr, talk:fitting-machine-to-page]
 ---
-With Jim Clifford, Jessica Jack, Mark Humphries and Lianne C. Leddy, I benchmarked optical character recognition on historical documents from 1612 to 1921. The results appear as *Reading the Archive by Machine: An OCR Benchmark for Historians, 1612–1921*, in Working Papers in Critical Search.
+With Jim Clifford, Jessica Jack, Mark Humphries and Lianne C. Leddy, I benchmarked optical character recognition on historical documents from 1612 to 1921. The results are published as a working paper in Working Papers in Critical Search, no. 4 (2026).

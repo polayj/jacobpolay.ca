@@ -1,0 +1,14 @@
+type: blog-post
+authors:
+  - { given: Chloë, family: Farr }
+  - { given: Jessica, family: Jack }
+  - { given: Jacob, family: Polay }
+title: The AI-Enabled Boom in Document Transcription
+venue: Active History
+date: "2026-09-23"
+url: https://activehistory.ca/blog/2026/09/23/ai-enabled-document-transcription/
+summary: >-
+  AI and Collaboration series. Lead author Chloë Farr, with Jessica Jack and Jacob Polay. On the new wave of
+  AI transcription tools for printed and handwritten sources, and why outputs built to train language models
+  often fall short of what historians need.
+related: [project:ai-and-collaboration, project:ocr-benchmark]

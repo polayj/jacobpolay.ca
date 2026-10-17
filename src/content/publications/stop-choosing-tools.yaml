@@ -1,0 +1,14 @@
+type: blog-post
+authors:
+  - { given: Jacob, family: Polay }
+  - { given: Chloë, family: Farr }
+  - { given: Jessica, family: Jack }
+title: Stop Choosing Tools. Start Building Them.
+venue: Active History
+date: "2026-09-30"
+url: https://activehistory.ca/blog/2026/09/30/building-ai-tools-historical-research/
+summary: >-
+  AI and Collaboration series. Lead author Jacob Polay, with Chloë Farr and Jessica Jack. Why historians
+  should build their own tools instead of choosing off-the-shelf ones, using named-entity recognition for
+  early modern documents as the example.
+related: [project:ai-and-collaboration, project:earlymodernner]

@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { formatDate } from '../../lib/dates';
 
 export async function getStaticPaths() {
   const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -24,7 +25,11 @@ const relatedIds = new Set([
   ...talks.filter((t) => t.data.related.includes(self)).map((t) => `talk:${t.id}`),
   ...projects.filter((p) => p.data.related.includes(self)).map((p) => `project:${p.id}`),
 ]);
-const related = [...relatedIds].flatMap((id) => titles.get(id) ?? []);
+const posts = publications
+  .filter((p) => p.data.type === 'blog-post' && p.data.related.includes(self))
+  .sort((a, b) => b.data.date.localeCompare(a.data.date));
+const postIds = new Set(posts.map((p) => `publication:${p.id}`));
+const related = [...relatedIds].filter((id) => !postIds.has(id)).flatMap((id) => titles.get(id) ?? []);
 const nextLink = next ? { href: `/projects/${next.id}`, label: next.data.title } : { href: '/writing', label: 'Writing & Talks' };
 ---
 <Base title={project.data.title} description={project.data.summary} next={nextLink}>
@@ -32,7 +37,22 @@ const nextLink = next ? { href: `/projects/${next.id}`, label: next.data.title }
   <h1 class="page-title">{project.data.title}</h1>
   <p class="page-lede">{project.data.summary}</p>
   <div class="project-layout">
-    <article class="prose"><Content /></article>
+    <article class="prose">
+      <Content />
+      {posts.length > 0 && (
+        <section class="series-posts" aria-labelledby="posts-h">
+          <h2 id="posts-h" class="section">Posts</h2>
+          <ol>
+            {posts.map((p) => (
+              <li>
+                <a href={p.data.url ?? `/writing#${p.id}`}>{p.data.title}</a>
+                <span class="post-meta">{p.data.venue}, {formatDate(p.data.date)}. {p.data.authors[0].given} {p.data.authors[0].family}, lead author.</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+    </article>
     <aside class="project-meta" aria-label="Project details">
       <dl>
         <dt>Status</dt><dd>{project.data.status}</dd>
@@ -56,6 +76,11 @@ const nextLink = next ? { href: `/projects/${next.id}`, label: next.data.title }
 </Base>
 
 <style>
+  .series-posts { margin-top: 32px; }
+  .series-posts ol { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
+  .series-posts li { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .series-posts a { font-style: italic; }
+  .post-meta { display: block; font-size: 15px; color: var(--ink-soft); }
   .crumb { margin: 32px 0 -36px; font: 13px var(--sans); }
   .project-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 40px; }
   .project-meta { font-size: 15px; border-left: 1px solid var(--rule); padding-left: 18px; }

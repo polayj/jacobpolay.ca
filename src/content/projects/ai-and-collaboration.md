@@ -1,8 +1,8 @@
 ---
-title: "AI and Collaboration (Active History)"
-summary: "A collaborative blog series explaining the technologies behind computational history in short, standalone posts."
+title: "AI and Collaboration"
+summary: "A collaborative series on Active History exploring how AI can support collaboration in historical research, and the technical and ethical questions it raises."
 status: ongoing
-role: Co-author; lead on the knowledge graph and named-entity recognition posts
+role: Co-initiator; lead author of two posts
 order: 4
 links:
   - label: The series on Active History
@@ -11,10 +11,6 @@ collaborators: [Chloë Farr, Jessica Jack]
 methods: [Critical AI, Knowledge graphs, Named-entity recognition, OCR]
 related: [publication:archive-is-not-a-toy]
 ---
-The series grew out of our critique of Talkie-1930, a "vintage" language model. Where Talkie extracted knowledge, the series models sharing it: short, standalone posts explaining the technologies behind computational history, each written collaboratively.
+*AI and Collaboration* is a series on Active History, initiated by Chloë Farr, Jessica Jack and me and edited by Sara Wilmshurst. It explores how AI can facilitate collaboration in historical research while weighing the technological and ethical challenges that users of large language models must consider.
 
-- Knowledge graphs, linked open data and GraphRAG (Jacob, lead)
-- Named-entity recognition: "Stop Choosing Tools. Start Building Them." (Jacob, lead)
-- OCR (Chloë Farr, lead; Jacob contributing)
-- Applications (Jessica Jack, lead)
-- Collaboration and wrap-up
+It grew out of our critique of Talkie-1930, a "vintage" language model. Where Talkie extracted knowledge, the series models sharing it: each post has a lead author and is written with the other two.

@@ -35,6 +35,10 @@ describe('chicago', () => {
     ));
   it('italicizes the venue in html mode', () =>
     expect(chicago(garbler, { html: true })).toBe('Polay, Jacob. "Circumventing the Garbler." <i>Intersections</i> 8, no. 1 (2025): 28.'));
+  it('links the URL in html mode', () =>
+    expect(chicago(toy, { html: true })).toMatch(
+      / <a href="https:\/\/activehistory\.ca\/blog\/2026\/07\/13\/the-archive-is-not-a-toy-the-hidden-problems-of-a-vintage-ai\/">https:\/\/activehistory\.ca\/blog\/2026\/07\/13\/the-archive-is-not-a-toy-the-hidden-problems-of-a-vintage-ai\/<\/a>\.$/,
+    ));
   it('escapes html in html mode', () =>
     expect(chicago({ ...garbler, title: 'Tools & <Tricks>' }, { html: true })).toContain('"Tools &amp; &lt;Tricks&gt;."'));
   it('adds no period after a title ending in ?', () =>

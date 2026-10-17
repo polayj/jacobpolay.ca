@@ -23,7 +23,7 @@ function link(p: PublicationData): string | undefined {
   return p.doi ? `https://doi.org/${p.doi}` : p.url;
 }
 
-/** A Chicago (notes-bibliography) bibliography entry. Plain text unless html is set, which italicizes the venue. */
+/** A Chicago (notes-bibliography) bibliography entry. Plain text unless html is set, which italicizes the venue and links the URL. */
 export function chicago(p: PublicationData, opts: { html?: boolean } = {}): string {
   const esc = opts.html ? escapeHtml : (s: string) => s;
   const venue = opts.html ? `<i>${esc(p.venue)}</i>` : p.venue;
@@ -41,7 +41,8 @@ export function chicago(p: PublicationData, opts: { html?: boolean } = {}): stri
       break;
   }
   const url = link(p);
-  return `${esc(endSentence(authorList(p)))} "${esc(title)}" ${where}${url ? ` ${esc(url)}.` : ''}`;
+  const shownUrl = url && (opts.html ? `<a href="${esc(url)}">${esc(url)}</a>` : url);
+  return `${esc(endSentence(authorList(p)))} "${esc(title)}" ${where}${shownUrl ? ` ${shownUrl}.` : ''}`;
 }
 
 const ascii = (s: string) => s.normalize('NFD').replace(/[^a-zA-Z]/g, '').toLowerCase();

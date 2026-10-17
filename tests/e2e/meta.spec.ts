@@ -40,21 +40,21 @@ test('json-ld person', async ({ page }) => {
   );
 });
 
-test('json-ld articles', async ({ page }) => {
+test('json-ld articles and posts', async ({ page }) => {
   await page.goto('/writing');
-  const articles = (await jsonLd(page)).filter((d) => d['@type'] === 'ScholarlyArticle');
-  expect(articles.map((a) => a.headline).sort()).toEqual([
+  const ld = await jsonLd(page);
+  expect(ld.filter((d) => d['@type'] === 'ScholarlyArticle').map((a) => a.headline).sort()).toEqual([
     'Circumventing the Garbler',
     'Reading the Archive by Machine: An OCR Benchmark for Historians, 1612–1921',
-    'The Archive is Not a Toy: The Hidden Problems of a "Vintage" AI',
   ]);
+  expect(ld.filter((d) => d['@type'] === 'BlogPosting')).toHaveLength(5);
 });
 
 test('feeds', async ({ request }) => {
   expect((await request.get('/sitemap-index.xml')).status()).toBe(200);
   const rss = await request.get('/rss.xml');
   expect(rss.status()).toBe(200);
-  expect(((await rss.text()).match(/<item>/g) ?? []).length).toBe(3);
+  expect(((await rss.text()).match(/<item>/g) ?? []).length).toBe(7);
 });
 
 test('favicons', async ({ page, request }) => {

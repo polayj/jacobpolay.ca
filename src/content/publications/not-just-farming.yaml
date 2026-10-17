@@ -1,0 +1,14 @@
+type: blog-post
+authors:
+  - { given: Jessica, family: Jack }
+  - { given: Chloë, family: Farr }
+  - { given: Jacob, family: Polay }
+title: "Not Just Farming: How an LLM Helped Me Study Saskatchewan’s Smallest Settlements"
+venue: Active History
+date: "2026-10-14"
+url: https://activehistory.ca/blog/2026/10/14/llm-saskatchewans-settlement-history/
+summary: >-
+  AI and Collaboration series. Lead author Jessica Jack, with Chloë Farr and Jacob Polay. How a language
+  model helped join datasets built for narrower questions into a typology of Saskatchewan's smallest
+  settlements.
+related: [project:ai-and-collaboration]

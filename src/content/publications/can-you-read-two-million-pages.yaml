@@ -1,0 +1,14 @@
+type: blog-post
+authors:
+  - { given: Jacob, family: Polay }
+  - { given: Chloë, family: Farr }
+  - { given: Jessica, family: Jack }
+title: Can You Read Two Million Pages? An LLM Can Help.
+venue: Active History
+date: "2026-10-07"
+url: https://activehistory.ca/blog/2026/10/07/named-entity-recognition-large-language-models/
+summary: >-
+  AI and Collaboration series. Lead author Jacob Polay, with Chloë Farr and Jessica Jack. How a knowledge
+  graph and GraphRAG, built from 20,000 early modern documents, can help historians read a corpus far too
+  large to read page by page.
+related: [project:ai-and-collaboration, project:earlymodernner]

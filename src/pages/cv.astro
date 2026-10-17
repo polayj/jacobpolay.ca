@@ -34,7 +34,12 @@ const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id
 
     <section id="publications" aria-labelledby="pub-h">
       <h2 id="pub-h" class="section">Publications</h2>
-      <ul class="hanging">{publications.map((p) => <li set:html={chicago(p, { html: true })} />)}</ul>
+      <ul class="hanging">{publications.filter((p) => p.type !== 'blog-post').map((p) => <li set:html={chicago(p, { html: true })} />)}</ul>
+    </section>
+
+    <section id="public-scholarship" aria-labelledby="ps-h">
+      <h2 id="ps-h" class="section">Public scholarship</h2>
+      <ul class="hanging">{publications.filter((p) => p.type === 'blog-post').map((p) => <li set:html={chicago(p, { html: true })} />)}</ul>
     </section>
 
     <section id="presentations" aria-labelledby="talk-h">
@@ -104,5 +109,6 @@ const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id
   .cv ul.bullets { list-style: disc; padding-left: 1.3em; font-size: 16px; }
   .cv ul.bullets li { margin: 2px 0; padding: 0; }
   .hanging li { padding-left: 1.5em; text-indent: -1.5em; }
+  .hanging :global(a) { word-break: break-all; }
   h3 { font-family: var(--fell-sc); font-size: 17px; font-weight: 400; color: var(--ink-soft); margin: 16px 0 4px; }
 </style>

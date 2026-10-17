@@ -7,10 +7,12 @@ import { byDateDesc, formatDate } from '../lib/dates';
 
 const publications = (await getCollection('publications')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
 const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
+const scholarly = publications.filter((p) => p.type !== 'blog-post');
+const posts = publications.filter((p) => p.type === 'blog-post');
 const series = await getEntry('projects', 'ai-and-collaboration');
 const articles = publications.map((p) => ({
   '@context': 'https://schema.org',
-  '@type': 'ScholarlyArticle',
+  '@type': p.type === 'blog-post' ? 'BlogPosting' : 'ScholarlyArticle',
   headline: p.title,
   author: p.authors.map((a) => ({ '@type': 'Person', name: `${a.given} ${a.family}` })),
   datePublished: p.date,
@@ -31,7 +33,7 @@ const withOthers = (presenters: string[]) => {
   <section id="publications" aria-labelledby="pubs-h">
     <h2 id="pubs-h" class="section">Publications</h2>
     <ol class="entries">
-      {publications.map((p) => (
+      {scholarly.map((p) => (
         <li class="entry" id={p.slug}>
           <p class="citation" set:html={chicago(p, { html: true })} />
           {p.summary && <p class="summary">{p.summary}</p>}
@@ -41,14 +43,21 @@ const withOthers = (presenters: string[]) => {
     </ol>
   </section>
 
-  {series && (
-    <section id="public-scholarship" aria-labelledby="ps-h">
-      <h2 id="ps-h" class="section">Public scholarship</h2>
-      <div class="entry">
-        <p><a href="/projects/ai-and-collaboration"><i>{series.data.title}</i></a>. {series.data.summary} With Chloë Farr and Jessica Jack.</p>
-      </div>
-    </section>
-  )}
+  <section id="public-scholarship" aria-labelledby="ps-h">
+    <h2 id="ps-h" class="section">Public scholarship</h2>
+    {series && (
+      <p class="intro">Most of these posts belong to <a href="/projects/ai-and-collaboration"><i>{series.data.title}</i></a>, a series on Active History initiated by Chloë Farr, Jessica Jack and me.</p>
+    )}
+    <ol class="entries">
+      {posts.map((p) => (
+        <li class="entry" id={p.slug}>
+          <p class="citation" set:html={chicago(p, { html: true })} />
+          {p.summary && <p class="summary">{p.summary}</p>}
+          <CiteButton publication={p} />
+        </li>
+      ))}
+    </ol>
+  </section>
 
   <section id="talks" aria-labelledby="talks-h">
     <h2 id="talks-h" class="section">Talks and presentations</h2>
@@ -77,5 +86,7 @@ const withOthers = (presenters: string[]) => {
   .entry { padding: 16px 0; border-bottom: 1px solid var(--rule); max-width: 72ch; }
   .citation { margin: 0 0 6px; padding-left: 1.5em; text-indent: -1.5em; }
   .citation time { display: block; text-indent: 0; font-family: var(--fell-sc); color: var(--rubric); font-size: 16px; }
+  .intro { margin: 0 0 14px; max-width: 72ch; color: var(--ink-soft); font-size: 16px; }
+  .citation :global(a) { word-break: break-all; }
   .summary { margin: 0 0 8px; color: var(--ink-soft); font-size: 16px; }
 </style>

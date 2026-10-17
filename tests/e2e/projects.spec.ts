@@ -97,3 +97,25 @@ test('toggle still works when the projects module fails', async ({ page }) => {
   await expect(page.locator('.list-view')).toBeVisible();
   await expect(page.getByRole('button', { name: 'List' })).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('projects use their actual names', async ({ page }) => {
+  await page.goto('/projects');
+  await page.getByRole('button', { name: 'List' }).click();
+  await expect(page.locator('.list-view .card h2')).toHaveText([
+    "The Digital Historian's Toolbox",
+    'EarlyModernNER',
+    'Reading the Archive by Machine: An OCR Benchmark for Historians, 1612–1921',
+    'AI and Collaboration',
+    'Footnotes on Film',
+  ]);
+});
+
+test('the AI and Collaboration page lists every post in the series', async ({ page }) => {
+  await page.goto('/projects/ai-and-collaboration');
+  for (const t of [
+    'The AI-Enabled Boom in Document Transcription',
+    'Stop Choosing Tools. Start Building Them.',
+    'Can You Read Two Million Pages? An LLM Can Help.',
+    'Not Just Farming: How an LLM Helped Me Study Saskatchewan',
+  ]) await expect(page.locator('.series-posts')).toContainText(t);
+});

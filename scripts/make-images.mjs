@@ -31,7 +31,7 @@ const card = h(
   h(
     'div',
     { fontFamily: 'Fell', fontStyle: 'italic', fontSize: 33, maxWidth: 900, textAlign: 'center', marginTop: 26, lineHeight: 1.35 },
-    'Historian of the early modern Atlantic world, its commodities and medicines, and of the machines that now read its archives.',
+    'Historian of the early modern Atlantic world and its commodities and medicines, exploring the role large language models will play in historical practice.',
   ),
   h('div', { fontFamily: 'Fleuron', fontSize: 40, color: RUBRIC, marginTop: 18 }, '❦'),
   h('div', { fontFamily: 'FellSC', fontSize: 30, letterSpacing: 1.5, marginTop: 14, marginBottom: 30 }, 'PhD Student · History · University of Saskatchewan'),

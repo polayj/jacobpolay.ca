@@ -21,7 +21,7 @@ describe('buildGraph', () => {
     const jims = g.nodes.filter((n) => n.id === 'person:jim-clifford');
     expect(jims).toHaveLength(1);
     const jimEdges = g.edges.filter((e) => e.source === 'person:jim-clifford' || e.target === 'person:jim-clifford');
-    expect(jimEdges).toHaveLength(4); // two projects, one publication, one talk
+    expect(jimEdges).toHaveLength(2); // the two projects; the paper and talk relate to a project that already lists him
   });
 
   it('excludes self', () => {
@@ -96,4 +96,37 @@ describe('wrapLabel', () => {
     expect(lines.join(' ')).not.toContain('…');
     expect('AI and Collaboration (Active History) and a very long tail of extra words'.startsWith(lines.join(' '))).toBe(true);
   });
+});
+
+describe('buildGraph merges a publication into the project of the same name', () => {
+  const g = buildGraph({
+    projects: [{ slug: 'ocr-benchmark', title: 'Reading the Archive by Machine', collaborators: ['Jim Clifford'], methods: [], related: [] }],
+    publications: [{ slug: 'reading', title: 'Reading the Archive by Machine', authors: ['Jim Clifford', 'Mark Humphries'], related: ['project:ocr-benchmark'] }],
+    talks: [{ slug: 't', title: 'Talk', presenters: [], related: ['publication:reading'] }],
+  });
+  it('keeps one node for the shared name', () =>
+    expect(g.nodes.filter((n) => n.label === 'Reading the Archive by Machine').map((n) => n.id)).toEqual(['project:ocr-benchmark']));
+  it('moves the publication edges onto the project', () => {
+    const keys = g.edges.map((e) => [e.source, e.target].sort().join(' '));
+    expect(keys).toContain('person:mark-humphries project:ocr-benchmark');
+    expect(keys).toContain('project:ocr-benchmark talk:t');
+    expect(keys.some((k) => k.includes('publication:reading'))).toBe(false);
+  });
+});
+
+describe('buildGraph skips person edges a related project already carries', () => {
+  const g = buildGraph({
+    projects: [{ slug: 'series', title: 'Series', collaborators: ['Chloë Farr', 'Jessica Jack'], methods: [], related: [] }],
+    publications: [
+      { slug: 'post', title: 'Post', authors: ['Chloë Farr', 'Jessica Jack', 'Sara Wilmshurst'], related: ['project:series'] },
+    ],
+    talks: [],
+  });
+  const keys = g.edges.map((e) => [e.source, e.target].sort().join(' '));
+  it('links the post to its project', () => expect(keys).toContain('project:series publication:post'));
+  it('does not link the post to people the project already lists', () => {
+    expect(keys).not.toContain('person:chloe-farr publication:post');
+    expect(keys).not.toContain('person:jessica-jack publication:post');
+  });
+  it('still links people the project does not list', () => expect(keys).toContain('person:sara-wilmshurst publication:post'));
 });

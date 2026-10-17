@@ -6,19 +6,35 @@ const GARBLER = 'Polay, Jacob. "Circumventing the Garbler." Intersections 8, no.
 test('sections', async ({ page }) => {
   await page.goto('/writing');
   const pubs = page.locator('#publications li.entry');
-  await expect(pubs).toHaveCount(3);
   expect(await pubs.evaluateAll((els) => els.map((e) => e.id))).toEqual([
-    'archive-is-not-a-toy',
     'reading-the-archive-by-machine',
     'circumventing-the-garbler',
   ]);
+  const posts = page.locator('#public-scholarship li.entry');
+  expect(await posts.evaluateAll((els) => els.map((e) => e.id))).toEqual([
+    'not-just-farming',
+    'can-you-read-two-million-pages',
+    'stop-choosing-tools',
+    'ai-enabled-boom-in-document-transcription',
+    'archive-is-not-a-toy',
+  ]);
   await expect(page.locator('#public-scholarship')).toContainText('AI and Collaboration');
+  await expect(posts.locator('details.cite')).toHaveCount(5);
   const talks = page.locator('#talks li.entry');
   expect(await talks.evaluateAll((els) => els.map((e) => e.id))).toEqual([
     'fitting-machine-to-page',
     'reading-the-unreadable',
     'solving-ocr',
   ]);
+});
+
+test('series posts credit lead and contributing authors', async ({ page }) => {
+  await page.goto('/writing');
+  await expect(page.locator('#stop-choosing-tools .citation')).toContainText(
+    'Polay, Jacob, Chloë Farr, and Jessica Jack. "Stop Choosing Tools. Start Building Them." Active History, September 30, 2026.',
+  );
+  await expect(page.locator('#not-just-farming .citation')).toContainText('Jack, Jessica, Chloë Farr, and Jacob Polay.');
+  await expect(page.locator('#ai-enabled-boom-in-document-transcription a[href="https://activehistory.ca/blog/2026/09/23/ai-enabled-document-transcription/"]')).toHaveCount(1);
 });
 
 test.describe('without javascript', () => {

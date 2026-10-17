@@ -16,7 +16,7 @@ export const PROFILES = [
   'https://github.com/polayj',
 ];
 export const TAGLINE =
-  'Historian of the early modern Atlantic world, its commodities and medicines, and of the machines that now read its archives.';
+  'Historian of the early modern Atlantic world and its commodities and medicines, exploring the role large language models will play in historical practice.';
 
 /** Makes the given Web Storage throw on every access, as in locked-down private windows. */
 export const blockStorage = (kind: 'localStorage' | 'sessionStorage') => `

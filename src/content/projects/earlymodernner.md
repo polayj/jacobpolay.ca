@@ -1,6 +1,6 @@
 ---
-title: "EarlyModernNER and GraphRAG pipeline"
-summary: "An open pipeline for transcription, entity extraction and knowledge-graph retrieval over early modern print, built for my MA thesis."
+title: "EarlyModernNER"
+summary: "Named-entity recognition for early modern English, and the open pipeline around it for transcription and knowledge-graph retrieval, built for my MA thesis."
 status: complete
 role: Designer and developer (MA thesis)
 order: 2

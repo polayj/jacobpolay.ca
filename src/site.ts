@@ -9,7 +9,7 @@ export const site = {
   department: 'Department of History',
   university: 'University of Saskatchewan',
   tagline:
-    'Historian of the early modern Atlantic world, its commodities and medicines, and of the machines that now read its archives.',
+    'Historian of the early modern Atlantic world and its commodities and medicines, exploring the role large language models will play in historical practice.',
   url: 'https://jacobpolay.ca',
   email: 'jacob.polay@usask.ca',
   orcid: 'https://orcid.org/0009-0001-9217-5531',

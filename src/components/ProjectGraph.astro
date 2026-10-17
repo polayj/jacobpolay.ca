@@ -5,7 +5,7 @@ import { loadGraphInput } from '../lib/projects-content';
 interface Props { featured: string[] }
 const { featured } = Astro.props;
 const W = 720;
-const H = 480;
+const H = 600;
 const graph = buildGraph(await loadGraphInput());
 const nodes = layoutGraph(graph, { width: W, height: H });
 const pos = Object.fromEntries(nodes.map((n) => [n.id, n]));
