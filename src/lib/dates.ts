@@ -6,3 +6,9 @@ export function formatDate(date: string): string {
   if (!m) return date;
   return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
 }
+
+/** A sortable key: a year-only date sorts as 1 January of that year. */
+export const sortableDate = (date: string) => (date.length === 4 ? `${date}-01-01` : date);
+
+/** Newest first. */
+export const byDateDesc = <T extends { date: string }>(a: T, b: T) => sortableDate(b.date).localeCompare(sortableDate(a.date));

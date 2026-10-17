@@ -1,0 +1,20 @@
+---
+import type { PublicationData } from '../content/schemas';
+import { chicago, bibtex, bibtexKey } from '../lib/cite';
+
+interface Props { publication: PublicationData }
+const { publication: p } = Astro.props;
+const plain = chicago(p);
+const bib = `data:text/plain;charset=utf-8,${encodeURIComponent(bibtex(p))}`;
+---
+<details class="cite">
+  <summary>Cite</summary>
+  <div class="cite-body">
+    <p class="cite-text">{plain}</p>
+    <div class="cite-actions">
+      <button type="button" data-copy={plain}>Copy</button>
+      <a href={bib} download={`${bibtexKey(p)}.bib`}>BibTeX</a>
+      <span class="cite-status" aria-live="polite"></span>
+    </div>
+  </div>
+</details>

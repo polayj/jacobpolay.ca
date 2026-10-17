@@ -1,6 +1,78 @@
 ---
+import { getCollection, getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import CiteButton from '../components/CiteButton.astro';
+import { chicago } from '../lib/cite';
+import { byDateDesc, formatDate } from '../lib/dates';
+
+const publications = (await getCollection('publications')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
+const talks = (await getCollection('talks')).map((e) => ({ ...e.data, slug: e.id })).sort(byDateDesc);
+const series = await getEntry('projects', 'ai-and-collaboration');
+const withOthers = (presenters: string[]) => {
+  const others = presenters.filter((p) => p !== 'Jacob Polay');
+  return others.length ? `With ${others.join(' and ')}. ` : '';
+};
 ---
-<Base title="Writing & Talks" description="Writing & Talks">
-  <h1 class="page-title">Writing & Talks</h1>
+<Base title="Writing & Talks" description="Publications, public scholarship and talks by Jacob Polay." next={{ href: '/cv', label: 'CV' }}>
+  <h1 class="page-title">Writing &amp; Talks</h1>
+  <p class="page-lede">Publications, public scholarship, and presentations.</p>
+
+  <section id="publications" aria-labelledby="pubs-h">
+    <h2 id="pubs-h" class="section">Publications</h2>
+    <ol class="entries">
+      {publications.map((p) => (
+        <li class="entry" id={p.slug}>
+          <p class="citation" set:html={chicago(p, { html: true })} />
+          {p.summary && <p class="summary">{p.summary}</p>}
+          <CiteButton publication={p} />
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {series && (
+    <section id="public-scholarship" aria-labelledby="ps-h">
+      <h2 id="ps-h" class="section">Public scholarship</h2>
+      <div class="entry">
+        <p><a href="/projects/ai-and-collaboration"><i>{series.data.title}</i></a>. {series.data.summary} With Chloë Farr and Jessica Jack.</p>
+      </div>
+    </section>
+  )}
+
+  <section id="talks" aria-labelledby="talks-h">
+    <h2 id="talks-h" class="section">Talks and presentations</h2>
+    <ol class="entries">
+      {talks.map((t) => (
+        <li class="entry" id={t.slug}>
+          <p class="citation">
+            <time datetime={t.date}>{formatDate(t.date)}</time>
+            <span>“{t.title}.” {withOthers(t.presenters)}{t.event}, {t.place}.</span>
+          </p>
+          {t.summary && <p class="summary">{t.summary}</p>}
+        </li>
+      ))}
+    </ol>
+  </section>
 </Base>
+
+<script>
+  import { initCiteButtons } from '../scripts/cite';
+  initCiteButtons();
+</script>
+
+<style>
+  section { margin-bottom: 40px; }
+  .entries { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
+  .entry { padding: 16px 0; border-bottom: 1px solid var(--rule); max-width: 72ch; }
+  .citation { margin: 0 0 6px; padding-left: 1.5em; text-indent: -1.5em; }
+  .citation time { display: block; text-indent: 0; font-family: var(--fell-sc); color: var(--rubric); font-size: 16px; }
+  .summary { margin: 0 0 8px; color: var(--ink-soft); font-size: 16px; }
+  .cite summary { cursor: pointer; display: inline-block; font: 13px var(--sans); color: var(--rubric); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 12px; list-style: none; }
+  .cite summary::-webkit-details-marker { display: none; }
+  .cite-body { margin-top: 10px; background: var(--paper-2); border: 1px solid var(--rule); padding: 12px 14px; }
+  .cite-text { margin: 0 0 10px; font-size: 15px; user-select: all; }
+  .cite-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font: 13px var(--sans); }
+  .cite-actions button, .cite-actions a { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 4px 12px; cursor: pointer; text-decoration: none; }
+  .cite-actions button:hover, .cite-actions a:hover { border-color: var(--rubric); color: var(--rubric); }
+  .cite-status { color: var(--ink-soft); }
+</style>
